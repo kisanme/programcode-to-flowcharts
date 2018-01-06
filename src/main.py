@@ -1,4 +1,5 @@
 import lib.phplex as phplex
+import classifier.classifier as classifier
 
 def parse_through_lex(filepath):
   data = open(filepath, 'r').read()
@@ -9,5 +10,6 @@ def parse_through_lex(filepath):
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
 # Tokenize
 for tok in lexemes:
-  print(tok.type)
-  print(tok.value)
+  print(classifier.get_token_class(tok))
+  # print(tok.type)
+  # print(tok.value)

@@ -12,4 +12,17 @@ class BasicClass {
 			echo ("HI");
 		}
 	}
+
+	public function switch_test () {
+	    switch (contenttype) {
+            case 'news':
+                echo "News flash!";
+                 break;
+            case 'interview':
+                echo "Interview with Mr. B";
+                break;
+            case 'presentation':
+                echo "An awesome Presentation";
+                break;
+        }
 }
