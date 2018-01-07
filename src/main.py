@@ -2,13 +2,17 @@ import lib.phplex as phplex
 import classifier.classifier as classifier
 import drawer.drawer as fl_drawer
 
-def parse_through_lex(filepath):
-  data = open(filepath, 'r').read()
+
+# Parsing invocation
+def parse_through_lex(file_path):
+  data = open(file_path, 'r').read()
   phplex.full_lexer.input(data)
   return phplex.full_lexer
 
 
+# Parsing
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
+
 # Tokenize
 for tok in lexemes:
   # print(classifier.get_token_class(tok))
@@ -16,6 +20,8 @@ for tok in lexemes:
   print(lexemes.token())
   # print(tok.value)
 
+# Drawing the flow chart
+# Drawer invocation
 chart = None
 x = fl_drawer.Drawer(chart)
 x.add_process('x')
@@ -29,4 +35,3 @@ x.connect('y is the loveliest number', 'x')
 x.end('x')
 x.end('x is the loveliest number')
 x.get_drawing().draw('./abc.png', prog='circo')
-print()
