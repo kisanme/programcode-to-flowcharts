@@ -10,6 +10,7 @@ def parse_through_lex(filepath):
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
 # Tokenize
 for tok in lexemes:
-  print(classifier.get_token_class(tok))
-  # print(tok.type)
+  # print(classifier.get_token_class(tok))
+  # print(tok)
+  print(lexemes.token())
   # print(tok.value)

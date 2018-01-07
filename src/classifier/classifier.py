@@ -20,6 +20,9 @@ classes = {
   ],
   'case': [
     'CASE'
+  ],
+  'for': [
+    'FOR'
   ]
 }
 

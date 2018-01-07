@@ -25,4 +25,12 @@ class BasicClass {
                 echo "An awesome Presentation";
                 break;
         }
+    }
+
+    public function for_test() {
+        for (x = 0; x < 10; x++) {
+            y[x] = z+x;
+            z = z+1;
+        }
+    }
 }
