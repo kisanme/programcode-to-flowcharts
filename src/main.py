@@ -15,9 +15,9 @@ lexemes = parse_through_lex('./php_test_files/BasicClass.php')
 
 # Tokenize
 for tok in lexemes:
-  # print(classifier.get_token_class(tok))
+  print(classifier.classify(tok))
   # print(tok)
-  print(lexemes.token())
+  # print(lexemes.token())
   # print(tok.value)
 
 # Drawing the flow chart
