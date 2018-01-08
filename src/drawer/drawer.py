@@ -1,10 +1,19 @@
+# ------------------------------
+# A drawer for drawing flowchart diagrams.
+#
+# Both the nodes and edges of the diagram can be chained and called
+# by adding a prefix to their names.
+#
+# @author Nasik Shafeek <nasik2ms@gmail.com>
+# ------------------------------
+
 import pygraphviz
 
 
 class Drawer(object):
 
   def __init__(self, gr):
-    self.gr = gr # type: pygraphviz.AGraph
+    self.gr = gr  # type: pygraphviz.AGraph
     self.initialize_drawing()
 
   def initialize_drawing(self):
