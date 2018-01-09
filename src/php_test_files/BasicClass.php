@@ -1,4 +1,5 @@
 <?php
+
 class BasicClass {
 
 	public function hello() {
