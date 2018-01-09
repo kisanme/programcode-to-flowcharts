@@ -28,9 +28,11 @@ class BasicClass {
     }
 
     public function for_test() {
-        for (x = 0; x < 10; x++) {
-            y[x] = z+x;
-            z = z+1;
+        $y = 20;
+        $z = 10;
+        for ($x = 0; $x < 10; $x++) {
+            $y[$x] = $z+$x;
+            $z = $z+1;
         }
     }
 }
