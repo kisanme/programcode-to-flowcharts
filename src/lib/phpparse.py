@@ -1912,13 +1912,16 @@ def run_parser(parser, source, quiet, debug):
 
   if not quiet:
     import pprint
+    ls = 0
     for item in result:
+      # pprint.pprint(item)
       if hasattr(item, 'generic'):
         item = item.generic()
       # print(item)
       pprint.pprint(item)
 
   parser.restart()
+  return result
 
 
 # main()

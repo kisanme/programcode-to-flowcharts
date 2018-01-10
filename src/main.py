@@ -1,5 +1,7 @@
 import lib.phplex as phplex
 import lib.phpparse as yacc_parse
+import translator.toflow as toflow
+import pprint
 import classifier.classifier as classifier
 import drawer.drawer as fl_drawer
 
@@ -14,7 +16,26 @@ def parse_through_lex(file_path):
 # Parsing
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
 parser = yacc_parse.make_parser()
-yacc_parse.run_parser(parser, open('./php_test_files/BasicClass.php', 'r'), False, False)
+parsed_ast = yacc_parse.run_parser(parser, open('./php_test_files/HelloWorld.php', 'r'), True, False)
+
+for statement in parsed_ast:
+  if hasattr(statement, 'generic'):
+    statement = statement.generic(True)
+    # print(toflow.get_node_name(statement))
+  if hasattr(statement, 'nodes'):
+    print("HI")
+  #   statement.generic()
+  # pprint.pprint(statement)
+  # print(toflow.get_node_name(statement))
+  # print(toflow.get_node_type(statement))
+  for item in statement:
+    pprint.pprint(item)
+    if type(item) is dict and item['nodes']:
+      # Has children nodes
+      print(toflow.is_leaf_node(item))
+
+# Test some imperative style coding
+# yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
 
 
 # Tokenize
