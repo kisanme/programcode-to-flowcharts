@@ -1,4 +1,5 @@
 import lib.phplex as phplex
+import lib.phpparse as yacc_parse
 import classifier.classifier as classifier
 import drawer.drawer as fl_drawer
 
@@ -12,12 +13,15 @@ def parse_through_lex(file_path):
 
 # Parsing
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
+parser = yacc_parse.make_parser()
+yacc_parse.run_parser(parser, open('./php_test_files/BasicClass.php', 'r'), False, False)
+
 
 # Tokenize
-for tok in lexemes:
+# for tok in lexemes:
   # print(lexemes.next())
   # print(lexemes.lexstate)
-  print(classifier.classify(tok))
+  # print(classifier.classify(tok))
   # print(tok)
   # print(lexemes.token())
   # print(tok.value)

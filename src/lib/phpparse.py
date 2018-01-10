@@ -7,10 +7,11 @@
 import os
 import sys
 import importlib
-import ast as ast
+import lib.ast as ast
 import ply.yacc as yacc
+import lib.phplex as lex
 
-lex = importlib.import_module('phplex')
+# lex = importlib.import_module('phplex')
 
 if sys.version_info[0] == 3:
   string_type = str
@@ -1920,4 +1921,4 @@ def run_parser(parser, source, quiet, debug):
   parser.restart()
 
 
-main()
+# main()
