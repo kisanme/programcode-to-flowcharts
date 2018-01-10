@@ -188,4 +188,4 @@ venv.bak/
 
 # Project specific
 outputs
-lib/parsetab.py
+src/lib/parsetab.py
