@@ -7,12 +7,10 @@
 import os
 import sys
 import importlib
-import lib.ast as ast
-import lib.phplex as lex
+import ast as ast
 import ply.yacc as yacc
 
-phplex = importlib.import_module('phplex')
-# ast = importlib.import_module('ast')
+lex = importlib.import_module('phplex')
 
 if sys.version_info[0] == 3:
   string_type = str
@@ -20,7 +18,7 @@ else:
   string_type = basestring
 
 # Get the token map
-tokens = phplex.tokens
+tokens = lex.tokens
 
 precedence = (
   ('left', 'INCLUDE', 'INCLUDE_ONCE', 'EVAL', 'REQUIRE', 'REQUIRE_ONCE'),
@@ -1896,7 +1894,7 @@ def main():
 
 def run_parser(parser, source, quiet, debug):
   s = source.read()
-  lexer = phplex.lexer
+  lexer = lex.lexer
   lexer.lineno = 1
 
   try:
@@ -1916,8 +1914,8 @@ def run_parser(parser, source, quiet, debug):
     for item in result:
       if hasattr(item, 'generic'):
         item = item.generic()
-      print(item)
-      # pprint.pprint(item)
+      # print(item)
+      pprint.pprint(item)
 
   parser.restart()
 
