@@ -1,5 +1,5 @@
 # Or rather check for the attribute 'nodes' and traverse
-traverse_node_types = [
+traverse_node_types = {
   'Block',
   'ListAssignment',
   'Global',
@@ -23,7 +23,7 @@ traverse_node_types = [
   'Case',
   'Default',
   'ConstantDeclarations'
-]
+}
 
 
 def get_node_name(node):
@@ -31,14 +31,28 @@ def get_node_name(node):
 
 
 def get_node_type(node):
+  if isinstance(node, str):
+    return node
   if not node[0]:
     return
   return node[0]
 
 
+# TODO
+# This needs modification,
+# node_type should work based on a dictionary of key value pairs
+def get_child(node_type, node):
+  if node.get(node_type):
+    return node[node_type]
+
+
 def get_nodes(node):
   if node.get('nodes'):
     return node['nodes']
+  elif node.get('node'):
+    return node['node']
+  elif node.get('else_'):
+    return node.get['else_']
   return False
 
 
@@ -87,7 +101,7 @@ def is_io(node):
   return False
 
 
-def is_process(node):
+def is_process(node_type):
   processes = [
     'Assignment',
     'ListAssignment',
@@ -103,18 +117,18 @@ def is_process(node):
     'StaticMethodCall'
   ]
 
-  if get_node_type(node) in processes:
+  if get_node_type(node_type) in processes:
     return True
   return False
 
 
-def identify_translate_to(node):
-  print(node)
-  if is_decision(node):
+def identify_translate_to(node_type):
+  print(node_type)
+  if is_decision(node_type):
     return 'add_decision'
-  elif is_process(node):
+  elif is_process(node_type):
     return 'add_process'
-  elif is_io(node):
+  elif is_io(node_type):
     return 'add_io'
   else:
     return False

@@ -5,6 +5,8 @@ import pprint
 import classifier.classifier as classifier
 import drawer.drawer as fl_drawer
 
+drawable_stack = []
+
 
 # Parsing invocation
 def parse_through_lex(file_path):
@@ -17,29 +19,46 @@ def recursive_parsing(nodes):
   if nodes is False:
     return
 
-  print('inside the recursive parser')
+  # print('inside the recursive parser')
   if toflow.is_leaf_node(nodes):
-    print('leaf node', nodes)
+    # print('leaf node', nodes)
     return nodes
   else:
     for node in nodes:
       if not toflow.is_leaf_node(node):
         print('none leaf node:', node)
+        print()
         if isinstance(node, tuple):
           print('tuple item')
-          recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
+          # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
+          drawable = toflow.identify_translate_to(node[0]), node
+          print('drawable:', drawable)
+          processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
+          # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
+          # print('processed_node:', processed_node)
         else:
           print('list or dict or other item')
-          recursive_parsing(toflow.get_nodes(node))
-        # return x
+          processed_node = recursive_parsing(toflow.get_nodes(node))
+          if processed_node is not None:
+            drawable = toflow.identify_translate_to(processed_node[0]), processed_node
+            print('drawable (from list):', drawable)
+          # print('processed_node list:', processed_node)
+          # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
       else:
-        print('leaf2 node:', node)
+        print('leaf node')
+        print(node)
+        # print('leaf2 node:', node)
+
+  return nodes
+
+
+# print()
+# print(drawable_stack)
 
 # Parsing
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
 parser = yacc_parse.make_parser()
 parsed_ast = yacc_parse.run_parser(parser, open('./php_test_files/BasicClass.php', 'r'), True, False)
-
 
 ast_processed = []
 for statement in parsed_ast:
@@ -64,20 +83,19 @@ for statement in parsed_ast:
       #   pprint.pprint(toflow.get_nodes(toflow.get_node_attributes(node)))
       # print(toflow.is_leaf_node(item))
 
-
-(recursive_parsing(ast_processed))
+recursive_parsing(ast_processed)
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
 
 
 # Tokenize
 # for tok in lexemes:
-  # print(lexemes.next())
-  # print(lexemes.lexstate)
-  # print(classifier.classify(tok))
-  # print(tok)
-  # print(lexemes.token())
-  # print(tok.value)
+# print(lexemes.next())
+# print(lexemes.lexstate)
+# print(classifier.classify(tok))
+# print(tok)
+# print(lexemes.token())
+# print(tok.value)
 
 # Drawing the flow chart
 # Drawer invocation
