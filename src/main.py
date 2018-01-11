@@ -42,10 +42,9 @@ def recursive_parsing(nodes):
           print('list or dict or other item')
           processed_node = recursive_parsing(toflow.get_nodes(node))
           if processed_node is not None:
-            drawable = (toflow.identify_translate_to(processed_node[0]), processed_node)
-            if drawable[0] is not False:
-              drawable_stack.append(drawable)
-            drawable_stack.append(drawable)
+            drawable = toflow.identify_translate_to(processed_node[0]), processed_node
+            # if drawable[0] is not False:
+            #   drawable_stack.append(drawable)
             print('drawable (from list):', drawable_stack)
           # print('processed_node list:', processed_node)
           # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
@@ -100,16 +99,57 @@ recursive_parsing(ast_processed)
 
 # Drawing the flow chart
 # Drawer invocation
+print()
+print()
+print()
+print()
+print()
+print()
+
+from itertools import tee, islice, chain
+
+
+# For accessing previous/next elements in for loops
+def previous_and_next(some_iterable):
+  prevs, items, nexts = tee(some_iterable, 3)
+  prevs = chain([None], prevs)
+  nexts = chain(islice(nexts, 1, None), [None])
+  return zip(prevs, items, nexts)
+
+
 chart = None
 x = fl_drawer.Drawer(chart)
-x.add_process('x')
-x.connect('Start', 'x')
-x.add_decision('x == 1')
-x.connect('x', 'x == 1')
-x.add_io('y is the loveliest number')
-x.connect('x == 1', 'x is the loveliest number', 'True')
-x.connect('x == 1', 'y is the loveliest number', 'False')
-x.connect('y is the loveliest number', 'x')
-x.end('x')
-x.end('x is the loveliest number')
-x.get_drawing().draw('../outputs/abc.png', prog='circo')
+for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
+  if drawing_entity[0] is False:
+    continue
+
+  if isinstance(drawing_entity, tuple):
+    print(drawing_entity)
+    if drawing_entity[1][0] == 'If':
+      item_name = 'If'
+      getattr(x, drawing_entity[0])(item_name)
+      # print(drawing_entity[1][1]['expr'])
+    else:
+      item_name = 'echo ("' + drawing_entity[1][1]['nodes'][0] + '")'
+      getattr(x, drawing_entity[0])(item_name)
+
+  # Connection logic
+  if previous is not None:
+    x.connect('If', item_name, 'True')
+  else:
+    x.connect('Start', item_name)
+  if nxt is None:
+    x.end(item_name)
+      # print(drawing_entity[1][1]['nodes'])
+  # drawing_entity[1][1]['nodes'] = 'an if condition'
+# x.add_process('x')
+# x.connect('Start', 'x')
+# x.add_decision('x == 1')
+# x.connect('x', 'x == 1')
+# x.add_io('y is the loveliest number')
+# x.connect('x == 1', 'x is the loveliest number', 'True')
+# x.connect('x == 1', 'y is the loveliest number', 'False')
+# x.connect('y is the loveliest number', 'x')
+# x.end('x')
+# x.end('x is the loveliest number')
+x.get_drawing().draw('../outputs/x.png', prog='circo')
