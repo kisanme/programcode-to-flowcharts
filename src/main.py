@@ -16,11 +16,11 @@ def parse_through_lex(file_path):
 # Parsing
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
 parser = yacc_parse.make_parser()
-parsed_ast = yacc_parse.run_parser(parser, open('./php_test_files/HelloWorld.php', 'r'), True, False)
+parsed_ast = yacc_parse.run_parser(parser, open('./php_test_files/BasicClass.php', 'r'), True, False)
 
 for statement in parsed_ast:
   if hasattr(statement, 'generic'):
-    statement = statement.generic(True)
+    statement = statement.generic()
     # print(toflow.get_node_name(statement))
   if hasattr(statement, 'nodes'):
     print("HI")
