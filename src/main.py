@@ -31,23 +31,24 @@ def recursive_parsing(nodes):
         if isinstance(node, tuple):
           print('tuple item')
           # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
-          drawable = toflow.identify_translate_to(node[0]), node
-          print('drawable:', drawable)
+          drawable = (toflow.identify_translate_to(node[0]), node)
+          if drawable[0] is not False:
+            drawable_stack.append(drawable)
+          print('drawable:', drawable_stack)
           processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
-          # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
+          # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
           # print('processed_node:', processed_node)
         else:
           print('list or dict or other item')
           processed_node = recursive_parsing(toflow.get_nodes(node))
           if processed_node is not None:
-            drawable = toflow.identify_translate_to(processed_node[0]), processed_node
-            print('drawable (from list):', drawable)
+            drawable = (toflow.identify_translate_to(processed_node[0]), processed_node)
+            if drawable[0] is not False:
+              drawable_stack.append(drawable)
+            drawable_stack.append(drawable)
+            print('drawable (from list):', drawable_stack)
           # print('processed_node list:', processed_node)
           # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
-      else:
-        print('leaf node')
-        print(node)
-        # print('leaf2 node:', node)
 
   return nodes
 
