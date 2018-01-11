@@ -13,27 +13,59 @@ def parse_through_lex(file_path):
   return phplex.full_lexer
 
 
+def recursive_parsing(nodes):
+  if nodes is False:
+    return
+
+  print('inside the recursive parser')
+  if toflow.is_leaf_node(nodes):
+    print('leaf node', nodes)
+    return nodes
+  else:
+    for node in nodes:
+      if not toflow.is_leaf_node(node):
+        print('none leaf node:', node)
+        if isinstance(node, tuple):
+          print('tuple item')
+          recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
+        else:
+          print('list or dict or other item')
+          recursive_parsing(toflow.get_nodes(node))
+        # return x
+      else:
+        print('leaf2 node:', node)
+
 # Parsing
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
 parser = yacc_parse.make_parser()
 parsed_ast = yacc_parse.run_parser(parser, open('./php_test_files/BasicClass.php', 'r'), True, False)
 
+
+ast_processed = []
 for statement in parsed_ast:
   if hasattr(statement, 'generic'):
     statement = statement.generic()
+    ast_processed = statement
+    # pprint.pprint(statement)
     # print(toflow.get_node_name(statement))
-  if hasattr(statement, 'nodes'):
-    print("HI")
+  # if hasattr(statement, 'nodes'):
+  #   print("HI")
   #   statement.generic()
   # pprint.pprint(statement)
   # print(toflow.get_node_name(statement))
   # print(toflow.get_node_type(statement))
   for item in statement:
-    pprint.pprint(item)
+    # pprint.pprint(item)
     if type(item) is dict and item['nodes']:
       # Has children nodes
-      print(toflow.is_leaf_node(item))
+      print()
+      # pprint.pprint(toflow.get_nodes(item))
+      # for node in toflow.get_nodes(item):
+      #   pprint.pprint(toflow.get_nodes(toflow.get_node_attributes(node)))
+      # print(toflow.is_leaf_node(item))
 
+
+(recursive_parsing(ast_processed))
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
 
