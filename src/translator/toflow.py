@@ -25,6 +25,11 @@ traverse_node_types = {
   'ConstantDeclarations'
 }
 
+fields = {
+  'If': 'expr',
+  'Echo': 'nodes',
+  'BinaryOp': ['op', 'left', 'right']
+}
 
 def get_node_name(node):
   return get_node_attributes(node)['name']
@@ -60,6 +65,26 @@ def get_node_attributes(node):
   if not node[1]:
     return
   return node[1]
+
+
+def get_node_values(node):
+  response = {}
+  if isinstance(node, tuple):
+    node_field = fields[get_node_type(node)]
+
+    if isinstance(node_field, list):
+      for field in node_field:
+        response[field] = node[1][field]
+        print('response within loop', field, response[field])
+        get_node_values(response[field])
+      print('response', response)
+    else:
+      print('response non instance', node[1][node_field])
+      get_node_values(node[1][node_field])
+  else:
+    print('response none', node)
+    return node
+
 
 
 def is_leaf_node(node):

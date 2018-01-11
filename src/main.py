@@ -128,9 +128,12 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
     if drawing_entity[1][0] == 'If':
       item_name = 'If'
       getattr(x, drawing_entity[0])(item_name)
+      print('item value', toflow.get_node_values(drawing_entity[1]))
       # print(drawing_entity[1][1]['expr'])
     else:
       item_name = 'echo ("' + drawing_entity[1][1]['nodes'][0] + '")'
+      print('item', drawing_entity[1])
+      print('item value', toflow.get_node_values(drawing_entity[1]))
       getattr(x, drawing_entity[0])(item_name)
 
   # Connection logic
