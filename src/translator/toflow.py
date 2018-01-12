@@ -150,7 +150,7 @@ def is_process(node_type):
 
 
 def identify_translate_to(node_type):
-  print(node_type)
+  print('identify_translate_to', node_type)
   if is_decision(node_type):
     return 'add_decision'
   elif is_process(node_type):

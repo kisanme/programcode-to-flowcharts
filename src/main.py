@@ -30,9 +30,9 @@ def recursive_parsing(nodes):
         #print('none leaf node:', node)
         #print()
         if isinstance(node, tuple):
-          #print('tuple item')
           # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
-          drawable = (toflow.identify_translate_to(node[0]), node)
+          print('IF calling')
+          drawable = (toflow.identify_translate_to(node), node)
           if drawable[0] is not False:
             drawable_stack.append(drawable)
           #print('drawable:', drawable_stack)
@@ -40,9 +40,10 @@ def recursive_parsing(nodes):
           # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
           # #print('processed_node:', processed_node)
         else:
-          #print('list or dict or other item')
+          # print('list or dict or other item', node)
           processed_node = recursive_parsing(toflow.get_nodes(node))
           if processed_node is not None:
+            print('Else calling:')
             drawable = toflow.identify_translate_to(processed_node[0]), processed_node
             # if drawable[0] is not False:
             #   drawable_stack.append(drawable)
@@ -64,6 +65,7 @@ for statement in parsed_ast:
     ast_processed = statement
 
 recursive_parsing(ast_processed)
+pprint.pprint(drawable_stack)
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
 
@@ -97,6 +99,12 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
     if drawing_entity[1][0] == 'If':
       item_name = 'If'
       getattr(x, drawing_entity[0])(item_name)
+      if drawing_entity[1][1]['else_'][1]['node'][1]['nodes']:
+        print('else', drawing_entity[1][1]['else_'][1]['node'][1]['nodes'][0][1]['nodes'])
+        inner_item = 'echo ("' + drawing_entity[1][1]['else_'][1]['node'][1]['nodes'][0][1]['nodes'][0] + '")'
+        getattr(x, 'add_process')(inner_item)
+        x.connect('If', inner_item, 'False')
+        x.end(inner_item)
       #print('item value', toflow.get_node_values(drawing_entity[1]))
       # #print(drawing_entity[1][1]['expr'])
     else:
@@ -107,6 +115,8 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
 
   # Connection logic
   if previous is not None:
+    if item_name == 'Hi':
+      x.connect('If', item_name, 'False')
     x.connect('If', item_name, 'True')
   else:
     x.connect('Start', item_name)

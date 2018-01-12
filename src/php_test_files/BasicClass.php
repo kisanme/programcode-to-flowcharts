@@ -12,7 +12,6 @@ class BasicClass {
 		} else {
 			echo ("HI");
 		}
-		return null;
 	}
 //
 //	public function switch_test () {
