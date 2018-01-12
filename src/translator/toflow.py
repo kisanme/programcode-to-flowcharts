@@ -27,6 +27,7 @@ traverse_node_types = {
 
 fields = {
   'If': 'expr',
+  'Else': 'expr',
   'Echo': 'nodes',
   'BinaryOp': ['op', 'left', 'right']
 }
@@ -75,14 +76,14 @@ def get_node_values(node):
     if isinstance(node_field, list):
       for field in node_field:
         response[field] = node[1][field]
-        print('response within loop', field, response[field])
+        # print('response within loop', field, response[field])
         get_node_values(response[field])
-      print('response', response)
+      # print('response', response)
     else:
-      print('response non instance', node[1][node_field])
+      # print('response non instance', node[1][node_field])
       get_node_values(node[1][node_field])
   else:
-    print('response none', node)
+    # print('response none', node)
     return node
 
 
@@ -97,6 +98,7 @@ def is_leaf_node(node):
 def is_decision(node):
   decisions = [
     'If',
+    'Else'
     'ElseIf',
     'While',
     'DoWhile',
