@@ -1,19 +1,19 @@
 <?php
 
-class BasicClass {
+//class BasicClass {
 
 //	public function hello() {
 //		echo ("printing hello");
 //	}
 
-	public function helloConditional() {
+//	public function helloConditional() {
 		if (1 == 2) {
 			echo ("printing hello");
 		} else {
 			echo ("HI");
 		}
-		return null;
-	}
+//		return null;
+//	}
 //
 //	public function switch_test () {
 //	    switch (contenttype) {
@@ -37,4 +37,4 @@ class BasicClass {
 //            $z = $z+1;
 //        }
 //    }
-}
+//}

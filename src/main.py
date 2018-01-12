@@ -15,13 +15,19 @@ def parse_through_lex(file_path):
   return phplex.full_lexer
 
 
-def recursive_parsing(nodes):
+drawable_graph = {}
+
+
+def recursive_parsing(nodes, g_id=0):
   if nodes is False:
     return
 
   # print('inside the recursive parser')
   if toflow.is_leaf_node(nodes):
     # print('leaf node', nodes)
+    drawable_graph[g_id] = nodes
+    g_id += 1
+    print('drawable_graph 1:', drawable_graph, g_id)
     return nodes
   else:
     for node in nodes:
@@ -33,22 +39,32 @@ def recursive_parsing(nodes):
           # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
           drawable = (toflow.identify_translate_to(node[0]), node)
           if drawable[0] is not False:
+            drawable_graph[g_id] = drawable
+            g_id += 1
+            print('drawable_graph 2:', drawable_graph, g_id)
             drawable_stack.append(drawable)
           print('drawable:', drawable_stack)
-          processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
+          g_id += 1
+          processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)), g_id)
           # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
           # print('processed_node:', processed_node)
         else:
           print('list or dict or other item')
-          processed_node = recursive_parsing(toflow.get_nodes(node))
+          g_id += 1
+          processed_node = recursive_parsing(toflow.get_nodes(node), g_id)
           if processed_node is not None:
             drawable = toflow.identify_translate_to(processed_node[0]), processed_node
+            drawable_graph[g_id] = processed_node[0]
+            print('drawable_graph 3:', drawable_graph, g_id)
             # if drawable[0] is not False:
             #   drawable_stack.append(drawable)
             print('drawable (from list):', drawable_stack)
           # print('processed_node list:', processed_node)
           # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
 
+  drawable_graph[g_id] = nodes
+  g_id += 1
+  print('drawable_graph 4:', drawable_graph, g_id)
   return nodes
 
 
@@ -73,11 +89,11 @@ for statement in parsed_ast:
   # pprint.pprint(statement)
   # print(toflow.get_node_name(statement))
   # print(toflow.get_node_type(statement))
-  for item in statement:
+  # for item in statement:
     # pprint.pprint(item)
-    if type(item) is dict and item['nodes']:
+    # if type(item) is dict and item['nodes']:
       # Has children nodes
-      print()
+      # print()
       # pprint.pprint(toflow.get_nodes(item))
       # for node in toflow.get_nodes(item):
       #   pprint.pprint(toflow.get_nodes(toflow.get_node_attributes(node)))
@@ -116,6 +132,11 @@ def previous_and_next(some_iterable):
   nexts = chain(islice(nexts, 1, None), [None])
   return zip(prevs, items, nexts)
 
+
+
+pprint.pprint(drawable_graph)
+# for key in drawable_graph.keys():
+#   print(key, drawable_graph.get(key))
 
 chart = None
 x = fl_drawer.Drawer(chart)
