@@ -7,7 +7,7 @@ class BasicClass {
 //	}
 
 	public function helloConditional() {
-		if (1 == 2 || 1===1) {
+		if (1 == 2) {
 			echo ("printing hello");
 		} else {
 			echo ("HI");

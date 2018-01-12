@@ -155,4 +155,5 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
 # x.connect('y is the loveliest number', 'x')
 # x.end('x')
 # x.end('x is the loveliest number')
+x.get_drawing().write('../outputs/x.dot')
 x.get_drawing().draw('../outputs/x.png', prog='circo')
