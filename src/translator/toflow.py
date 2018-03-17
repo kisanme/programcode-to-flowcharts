@@ -63,6 +63,7 @@ def get_nodes(node):
 
 
 def get_node_attributes(node):
+  print("obtained node", node)
   if not node[1]:
     return
   return node[1]
@@ -87,9 +88,13 @@ def get_node_values(node):
     return node
 
 
-
+# This is not the ideal way to test the leaf node.
+# TODO - modify this to see how many elements are contained within the node to check whether its a leaf node
 def is_leaf_node(node):
-  if isinstance(node, str):
+  print('leaf node stuff:', len(node), node)
+  if isinstance(node, (str, int)):
+    return True
+  elif len(node) == 1:
     return True
   else:
     return False
@@ -98,7 +103,6 @@ def is_leaf_node(node):
 def is_decision(node):
   decisions = [
     'If',
-    'Else'
     'ElseIf',
     'While',
     'DoWhile',
@@ -150,7 +154,6 @@ def is_process(node_type):
 
 
 def identify_translate_to(node_type):
-  print('identify_translate_to', node_type)
   if is_decision(node_type):
     return 'add_decision'
   elif is_process(node_type):

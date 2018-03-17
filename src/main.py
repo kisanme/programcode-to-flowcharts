@@ -16,14 +16,55 @@ def parse_through_lex(file_path):
   return phplex.full_lexer
 
 
+# Parsing the class item and re-assigning the first node of the node lists
+# Assumption, the first method in the class is the method that needs the flowchart drawn
+def pre_parse(nodes):
+  if nodes[0] == 'Class':
+    nodes = nodes[1]
+    nodes = nodes['nodes'][0]
+    return nodes
+
+
+def shallow_parse(nodes):
+  nodes = pre_parse(nodes)
+  # if nodes is False:
+  #   return
+  for node in nodes:
+    if not toflow.is_leaf_node(node):
+      print('none leaf node:', node)
+      # print()
+      if isinstance(node, tuple):
+        # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
+        print('IF calling')
+        # pprint.pprint(node)
+        node_type = toflow.identify_translate_to(node)
+        drawable = (node_type, node)
+        pprint.pprint(drawable)
+        if drawable[0] is not False:
+          drawable_stack.append(drawable)
+        print('drawable:', drawable_stack)
+        processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
+        # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
+        print('processed_node:', processed_node)
+      else:
+        print('list or dict or other item', node)
+        processed_node = recursive_parsing(toflow.get_nodes(node))
+        if processed_node is not None:
+          # print('Else calling:')
+          # This is buggy: It only checks the very first node item, say the first statement of the block
+          drawable = toflow.identify_translate_to(processed_node[0]), processed_node
+          # drawable_stack.append(drawable)
+  return nodes
+
+
 def recursive_parsing(nodes):
 
   if nodes is False:
     return
 
-  # #print('inside the recursive parser')
+  # If the node is a leaf node, will return the node itself.
   if toflow.is_leaf_node(nodes):
-    # #print('leaf node', nodes)
+    print('leaf node', nodes)
     return nodes
   else:
     for node in nodes:
@@ -33,19 +74,29 @@ def recursive_parsing(nodes):
         if isinstance(node, tuple):
           # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
           print('IF calling')
-          drawable = (toflow.identify_translate_to(node), node)
+          # pprint.pprint(node)
+          node_type = toflow.identify_translate_to(node)
+          drawable = (node_type, node)
+          pprint.pprint(drawable)
           if drawable[0] is not False:
             drawable_stack.append(drawable)
-          # print('drawable:', drawable_stack)
+          print('drawable:', drawable_stack)
           processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
           # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
-          # #print('processed_node:', processed_node)
+          print('processed_node:', processed_node)
         else:
-          # print('list or dict or other item', node)
+          print('list or dict or other item', node)
           processed_node = recursive_parsing(toflow.get_nodes(node))
           if processed_node is not None:
-            print('Else calling:')
+            # print('Else calling:')
+            # This is buggy: It only checks the very first node item, say the first statement of the block
             drawable = toflow.identify_translate_to(processed_node[0]), processed_node
+            # drawable_stack.append(drawable)
+            print('Proc Node')
+            print('Proc Node')
+            print('Proc Node')
+            print('Proc Node')
+            pprint.pprint(processed_node)
             # if drawable[0] is not False:
             #   drawable_stack.append(drawable)
             # print('drawable (from list):', drawable_stack)
@@ -66,9 +117,12 @@ for statement in parsed_ast:
     statement = statement.generic()
     ast_processed = statement
 
-pprint.pprint(ast_processed)
-# exit()
-recursive_parsing(ast_processed)
+# pprint.pprint(ast_processed)
+print()
+# rp_parsed = recursive_parsing(ast_processed)
+rp_parsed = shallow_parse(ast_processed)
+print('')
+print('Drawable stack: ')
 pprint.pprint(drawable_stack)
 
 
@@ -93,6 +147,10 @@ def previous_and_next(some_iterable):
   return zip(prevs, items, nexts)
 
 
+# Customized Drawing
+# ==================
+
+'''
 chart = None
 x = fl_drawer.Drawer(chart)
 for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
@@ -131,21 +189,26 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
     x.end(item_name)
     # #print(drawing_entity[1][1]['nodes'])
   # drawing_entity[1][1]['nodes'] = 'an if condition'
-x.get_drawing().write('../outputs/x.dot')
-x.get_drawing().draw('../outputs/x.png', prog='circo')
+'''
 
-# While loop drawing
-while_drawer = fl_drawer.Drawer(None)
-while_drawer.connect('Start', '$counter = 0;')
-while_drawer.add_process('$counter = 0;')
-while_drawer.connect('$counter = 0;', '$counter < 100')
-while_drawer.add_decision('$counter < 100')
-while_drawer.connect('$counter < 100', '$some_array[] = $counter;', 'True')
-while_drawer.add_process('$some_array[] = $counter;')
-while_drawer.connect('$some_array[] = $counter;', '$counter ++;')
-while_drawer.add_process('$counter ++;')
-while_drawer.connect('$counter ++;', '$counter < 100')
-while_drawer.end('$counter < 100', 'False')
-while_drawer.get_drawing().draw('outputs/while.png', prog='circo')
+# Drawing stuffs
+# ==============
 
-print('hello world')
+# x.get_drawing().write('../outputs/x.dot')
+# x.get_drawing().draw('../outputs/x.png', prog='circo')
+#
+# # While loop drawing
+# while_drawer = fl_drawer.Drawer(None)
+# while_drawer.connect('Start', '$counter = 0;')
+# while_drawer.add_process('$counter = 0;')
+# while_drawer.connect('$counter = 0;', '$counter < 100')
+# while_drawer.add_decision('$counter < 100')
+# while_drawer.connect('$counter < 100', '$some_array[] = $counter;', 'True')
+# while_drawer.add_process('$some_array[] = $counter;')
+# while_drawer.connect('$some_array[] = $counter;', '$counter ++;')
+# while_drawer.add_process('$counter ++;')
+# while_drawer.connect('$counter ++;', '$counter < 100')
+# while_drawer.end('$counter < 100', 'False')
+# while_drawer.get_drawing().draw('outputs/while.png', prog='circo')
+#
+# print('hello world')
