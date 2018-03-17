@@ -13,6 +13,26 @@ class BasicClass {
 			echo ("HI");
 		}
 	}
+
+	public function nestedIfEvaluation() {
+		if ($x < 2) {
+		    if ($x == 0) {
+                echo ("Zero test");
+		    }
+			echo ("1 or negative number");
+		} else {
+			echo ("positive numbers greater than 2");
+		}
+	}
+
+
+    public function whileEvaluation() {
+      $counter = 0;
+      while ($counter < 100) {
+        $some_array[] = $counter;
+        $counter ++;
+      }
+    }
 //
 //	public function switch_test () {
 //	    switch (contenttype) {
