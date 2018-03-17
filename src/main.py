@@ -16,47 +16,6 @@ def parse_through_lex(file_path):
   return phplex.full_lexer
 
 
-# Parsing the class item and re-assigning the first node of the node lists
-# Assumption, the first method in the class is the method that needs the flowchart drawn
-def pre_parse(nodes):
-  if nodes[0] == 'Class':
-    nodes = nodes[1]
-    nodes = nodes['nodes'][0]
-    return nodes
-
-
-def shallow_parse(nodes):
-  nodes = pre_parse(nodes)
-  # if nodes is False:
-  #   return
-  for node in nodes:
-    if not toflow.is_leaf_node(node):
-      print('none leaf node:', node)
-      # print()
-      if isinstance(node, tuple):
-        # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
-        print('IF calling')
-        # pprint.pprint(node)
-        node_type = toflow.identify_translate_to(node)
-        drawable = (node_type, node)
-        pprint.pprint(drawable)
-        if drawable[0] is not False:
-          drawable_stack.append(drawable)
-        print('drawable:', drawable_stack)
-        processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
-        # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
-        print('processed_node:', processed_node)
-      else:
-        print('list or dict or other item', node)
-        processed_node = recursive_parsing(toflow.get_nodes(node))
-        if processed_node is not None:
-          # print('Else calling:')
-          # This is buggy: It only checks the very first node item, say the first statement of the block
-          drawable = toflow.identify_translate_to(processed_node[0]), processed_node
-          # drawable_stack.append(drawable)
-  return nodes
-
-
 def recursive_parsing(nodes):
 
   if nodes is False:
@@ -104,6 +63,40 @@ def recursive_parsing(nodes):
           # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
 
   return nodes
+
+
+# Parsing the class item and re-assigning the first node of the node lists
+# Assumption, the first method in the class is the method that needs the flowchart drawn
+def pre_parse(nodes):
+  if nodes[0] == 'Class':
+    nodes = nodes[1]
+    nodes = nodes['nodes'][0]
+    return nodes
+
+
+def shallow_parse(nodes):
+  nodes = pre_parse(nodes)
+  # if nodes is False:
+  #   return
+  for node in nodes:
+    if not toflow.is_leaf_node(node):
+      if isinstance(node, tuple):
+        # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
+        print('IF calling')
+        node_type = toflow.identify_translate_to(node)
+        drawable = (node_type, node)
+        if drawable[0] is not False:
+          drawable_stack.append(drawable)
+        processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
+        # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
+      else:
+        processed_node = recursive_parsing(toflow.get_nodes(node))
+        if processed_node is not None:
+          # This is buggy: It only checks the very first node item, say the first statement of the block
+          drawable = toflow.identify_translate_to(processed_node[0]), processed_node
+          # drawable_stack.append(drawable)
+  return nodes
+
 
 
 # Parsing

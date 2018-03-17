@@ -20,6 +20,7 @@ class BasicClass {
 	}
 
 //	public function nestedIfEvaluation() {
+//	    $x = 2;
 //		if ($x < 2) {
 //		    if ($x == 0) {
 //                echo ("Zero test");
@@ -28,6 +29,7 @@ class BasicClass {
 //		} else {
 //			echo ("positive numbers greater than 2");
 //		}
+//		echo ("Outro");
 //	}
 
 
@@ -52,7 +54,7 @@ class BasicClass {
 //                break;
 //        }
 //    }
-//
+
 //    public function for_test() {
 //        $y = 20;
 //        $z = 10;
