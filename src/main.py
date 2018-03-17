@@ -17,6 +17,7 @@ def parse_through_lex(file_path):
 
 
 def recursive_parsing(nodes):
+
   if nodes is False:
     return
 
@@ -27,15 +28,15 @@ def recursive_parsing(nodes):
   else:
     for node in nodes:
       if not toflow.is_leaf_node(node):
-        #print('none leaf node:', node)
-        #print()
+        # print('none leaf node:', node)
+        # print()
         if isinstance(node, tuple):
           # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
           print('IF calling')
           drawable = (toflow.identify_translate_to(node), node)
           if drawable[0] is not False:
             drawable_stack.append(drawable)
-          #print('drawable:', drawable_stack)
+          # print('drawable:', drawable_stack)
           processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
           # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
           # #print('processed_node:', processed_node)
@@ -47,11 +48,12 @@ def recursive_parsing(nodes):
             drawable = toflow.identify_translate_to(processed_node[0]), processed_node
             # if drawable[0] is not False:
             #   drawable_stack.append(drawable)
-            #print('drawable (from list):', drawable_stack)
+            # print('drawable (from list):', drawable_stack)
           # #print('processed_node list:', processed_node)
           # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
 
   return nodes
+
 
 # Parsing
 lexemes = parse_through_lex('./php_test_files/BasicClass.php')
@@ -64,20 +66,23 @@ for statement in parsed_ast:
     statement = statement.generic()
     ast_processed = statement
 
+pprint.pprint(ast_processed)
+# exit()
 recursive_parsing(ast_processed)
 pprint.pprint(drawable_stack)
+
+
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
 
 # Drawing the flow chart
 # Drawer invocation
-#print()
-#print()
-#print()
-#print()
-#print()
-#print()
-
+# print()
+# print()
+# print()
+# print()
+# print()
+# print()
 
 
 # For accessing previous/next elements in for loops
@@ -95,34 +100,52 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
     continue
 
   if isinstance(drawing_entity, tuple):
-    #print(drawing_entity)
+    # print(drawing_entity)
     if drawing_entity[1][0] == 'If':
-      item_name = 'If'
+      item_name = 'If (1== 2)'
       getattr(x, drawing_entity[0])(item_name)
+      # Drawing Else part
       if drawing_entity[1][1]['else_'][1]['node'][1]['nodes']:
         print('else', drawing_entity[1][1]['else_'][1]['node'][1]['nodes'][0][1]['nodes'])
         inner_item = 'echo ("' + drawing_entity[1][1]['else_'][1]['node'][1]['nodes'][0][1]['nodes'][0] + '")'
         getattr(x, 'add_process')(inner_item)
-        x.connect('If', inner_item, 'False')
+        x.connect('If (1== 2)', inner_item, 'False')
         x.end(inner_item)
-      #print('item value', toflow.get_node_values(drawing_entity[1]))
-      # #print(drawing_entity[1][1]['expr'])
+      # print('item value', toflow.get_node_values(drawing_entity[1]))
+      # print(drawing_entity[1][1]['expr'])
     else:
       item_name = 'echo ("' + drawing_entity[1][1]['nodes'][0] + '")'
-      #print('item', drawing_entity[1])
-      #print('item value', toflow.get_node_values(drawing_entity[1]))
+      # print('item', drawing_entity[1])
+      # print('item value', toflow.get_node_values(drawing_entity[1]))
       getattr(x, drawing_entity[0])(item_name)
 
   # Connection logic
   if previous is not None:
     if item_name == 'Hi':
-      x.connect('If', item_name, 'False')
-    x.connect('If', item_name, 'True')
+      x.connect('If (1== 2)', item_name, 'False')
+    x.connect('If (1== 2)', item_name, 'True')
+
   else:
     x.connect('Start', item_name)
   if nxt is None:
     x.end(item_name)
-      # #print(drawing_entity[1][1]['nodes'])
+    # #print(drawing_entity[1][1]['nodes'])
   # drawing_entity[1][1]['nodes'] = 'an if condition'
 x.get_drawing().write('../outputs/x.dot')
 x.get_drawing().draw('../outputs/x.png', prog='circo')
+
+# While loop drawing
+while_drawer = fl_drawer.Drawer(None)
+while_drawer.connect('Start', '$counter = 0;')
+while_drawer.add_process('$counter = 0;')
+while_drawer.connect('$counter = 0;', '$counter < 100')
+while_drawer.add_decision('$counter < 100')
+while_drawer.connect('$counter < 100', '$some_array[] = $counter;', 'True')
+while_drawer.add_process('$some_array[] = $counter;')
+while_drawer.connect('$some_array[] = $counter;', '$counter ++;')
+while_drawer.add_process('$counter ++;')
+while_drawer.connect('$counter ++;', '$counter < 100')
+while_drawer.end('$counter < 100', 'False')
+while_drawer.get_drawing().draw('outputs/while.png', prog='circo')
+
+print('hello world')
