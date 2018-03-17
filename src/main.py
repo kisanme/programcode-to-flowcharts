@@ -16,52 +16,35 @@ def parse_through_lex(file_path):
   return phplex.full_lexer
 
 
-def recursive_parsing(nodes):
-
+def recursive_shallow_parsing(nodes):
   if nodes is False:
     return
 
   # If the node is a leaf node, will return the node itself.
   if toflow.is_leaf_node(nodes):
-    print('leaf node', nodes)
     return nodes
   else:
     for node in nodes:
       if not toflow.is_leaf_node(node):
-        # print('none leaf node:', node)
-        # print()
         if isinstance(node, tuple):
-          # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
-          print('IF calling')
-          # pprint.pprint(node)
+          # recursive_shallow_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
           node_type = toflow.identify_translate_to(node)
           drawable = (node_type, node)
-          pprint.pprint(drawable)
           if drawable[0] is not False:
             drawable_stack.append(drawable)
-          print('drawable:', drawable_stack)
-          processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
-          # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
-          print('processed_node:', processed_node)
+          processed_node = recursive_shallow_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
+          # drawable_stack.append((toflow.get_node_typ(node), recursive_shallow_parsing(toflow.get_nodes(node))))
         else:
-          print('list or dict or other item', node)
-          processed_node = recursive_parsing(toflow.get_nodes(node))
+          processed_node = recursive_shallow_parsing(toflow.get_nodes(node))
           if processed_node is not None:
-            # print('Else calling:')
             # This is buggy: It only checks the very first node item, say the first statement of the block
             drawable = toflow.identify_translate_to(processed_node[0]), processed_node
             # drawable_stack.append(drawable)
-            print('Proc Node')
-            print('Proc Node')
-            print('Proc Node')
-            print('Proc Node')
-            pprint.pprint(processed_node)
             # if drawable[0] is not False:
             #   drawable_stack.append(drawable)
             # print('drawable (from list):', drawable_stack)
           # #print('processed_node list:', processed_node)
-          # drawable_stack.append((toflow.get_node_type(node), recursive_parsing(toflow.get_nodes(node))))
-
+          # drawable_stack.append((toflow.get_node_type(node), recursive_shallow_parsing(toflow.get_nodes(node))))
   return nodes
 
 
@@ -76,27 +59,12 @@ def pre_parse(nodes):
 
 def shallow_parse(nodes):
   nodes = pre_parse(nodes)
-  # if nodes is False:
-  #   return
-  for node in nodes:
-    if not toflow.is_leaf_node(node):
-      if isinstance(node, tuple):
-        # recursive_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
-        print('IF calling')
-        node_type = toflow.identify_translate_to(node)
-        drawable = (node_type, node)
-        if drawable[0] is not False:
-          drawable_stack.append(drawable)
-        processed_node = recursive_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
-        # drawable_stack.append((toflow.get_node_typ(node), recursive_parsing(toflow.get_nodes(node))))
-      else:
-        processed_node = recursive_parsing(toflow.get_nodes(node))
-        if processed_node is not None:
-          # This is buggy: It only checks the very first node item, say the first statement of the block
-          drawable = toflow.identify_translate_to(processed_node[0]), processed_node
-          # drawable_stack.append(drawable)
-  return nodes
 
+  if nodes is False:
+    return
+
+  nodes = recursive_shallow_parsing(nodes)
+  return nodes
 
 
 # Parsing
@@ -112,7 +80,7 @@ for statement in parsed_ast:
 
 # pprint.pprint(ast_processed)
 print()
-# rp_parsed = recursive_parsing(ast_processed)
+# rp_parsed = recursive_shallow_parsing(ast_processed)
 rp_parsed = shallow_parse(ast_processed)
 print('')
 print('Drawable stack: ')
