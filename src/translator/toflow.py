@@ -32,6 +32,7 @@ fields = {
   'BinaryOp': ['op', 'left', 'right']
 }
 
+
 def get_node_name(node):
   return get_node_attributes(node)['name']
 
@@ -63,13 +64,12 @@ def get_nodes(node):
 
 
 def get_node_attributes(node):
-  print("obtained node", node)
   if not node[1]:
     return
   return node[1]
 
 
-def get_node_values(node):
+def x_get_node_values(node):
   response = {}
   if isinstance(node, tuple):
     node_field = fields[get_node_type(node)]
@@ -83,15 +83,23 @@ def get_node_values(node):
     else:
       # print('response non instance', node[1][node_field])
       get_node_values(node[1][node_field])
+  elif isinstance(node, list):
+    print("dictionary", type(node), node)
+    return node
   else:
     # print('response none', node)
     return node
 
 
+def get_node_values(node):
+  if isinstance(node, dict):
+    return node.get('nodes', None)
+  else:
+    return
+
 # This is not the ideal way to test the leaf node.
 # TODO - modify this to see how many elements are contained within the node to check whether its a leaf node
 def is_leaf_node(node):
-  print('leaf node stuff:', len(node), node)
   if isinstance(node, (str, int)):
     return True
   elif len(node) == 1:
@@ -120,6 +128,7 @@ def is_decision(node):
 def is_io(node):
   input_outputs = [
     'Constant',
+    'Echo',
     'Variable',
     'StaticVariable',
     'LexicalVariable',
@@ -136,7 +145,6 @@ def is_process(node_type):
   processes = [
     'Assignment',
     'ListAssignment',
-    'Echo',
     'Print',
     'Unset',
     'Try',
@@ -162,3 +170,12 @@ def identify_translate_to(node_type):
     return 'add_io'
   else:
     return False
+
+
+def get_var_name(var_node):
+  if isinstance(var_node, tuple):
+    return var_node[1].get('name', None)
+  elif isinstance(var_node, dict):
+    return var_node.get('name', None)
+  else:
+    return None

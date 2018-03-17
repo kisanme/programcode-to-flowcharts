@@ -2,10 +2,6 @@
 
 class BasicClass {
 
-//	public function hello() {
-//		echo ("printing hello");
-//	}
-
 	public function helloConditional() {
 		if (1 == 2) {
 		    $x = 2;
@@ -16,7 +12,9 @@ class BasicClass {
 			echo ("HI");
 		}
 		echo "Afterwards";
-		hello();
+		$hi = new Carbon();
+		$hello = $hi->date();
+		hello(1,2,3);
 	}
 
 //	public function nestedIfEvaluation() {
@@ -63,4 +61,8 @@ class BasicClass {
 //            $z = $z+1;
 //        }
 //    }
+
+//	public function hello() {
+//		echo ("printing hello");
+//	}
 }

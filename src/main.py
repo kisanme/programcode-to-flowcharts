@@ -57,6 +57,9 @@ def pre_parse(nodes):
     return nodes
 
 
+# Shallow parsing for AST
+# Will only parse the code by main constructs
+# In-depth parsing for each constructs should be done using deep_parse(root_node)
 def shallow_parse(nodes):
   nodes = pre_parse(nodes)
 
@@ -87,17 +90,36 @@ print('Drawable stack: ')
 pprint.pprint(drawable_stack)
 
 
+processed_drawables = []
+
+
+def io_node(node):
+  node_type = toflow.get_node_type(node)
+  out = ''
+  if node_type == 'Echo':
+    item = toflow.get_node_values(node[1])[0]
+    out = 'echo ("'+item+'")'
+  return out
+
+
+def deep_parse(root_node, node_type='add_process'):
+  parse_val = ''
+  if node_type == 'add_io':
+    parse_val = (io_node(root_node))
+  elif node_type == 'add_process':
+    print("Process")
+    # print(toflow.get_node_type(root_node))
+  elif node_type == 'add_decision':
+    print('DECISION')
+  return root_node
+
+
+for node in drawable_stack:
+  n_type = node[0]
+  deep_parse(node[1], n_type)
+
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
-
-# Drawing the flow chart
-# Drawer invocation
-# print()
-# print()
-# print()
-# print()
-# print()
-# print()
 
 
 # For accessing previous/next elements in for loops
