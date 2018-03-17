@@ -96,6 +96,11 @@ def get_node_values(node, key=''):
     if not key == '':
       return node.get(key, None)
     return node.get('nodes', None)
+  elif isinstance(node, tuple):
+    if key == 'Block' and node[0] == 'Block':
+      return node[1]
+    else:
+      return node
   else:
     return
 

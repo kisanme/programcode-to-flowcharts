@@ -107,13 +107,27 @@ def decision_node(node):
   print('NODE:TYPE: ', node_type)
   if node_type == 'If':
     expression = toflow.get_node_values(node[1], 'expr')
-    true_items = toflow.get_node_values(node[1], 'node')
-    elif_items = toflow.get_node_values(node[1], 'elseifs')
-    else_items = toflow.get_node_values(node[1], 'else_')
+    true_items = toflow.get_node_values(toflow.get_node_values(node[1], 'node')[1], 'nodes')
+    elif_items = toflow.get_node_values(toflow.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block')
+    # elif_items = toflow.get_node_values(node[1], 'elseifs')[0]
+    else_items = toflow.get_node_values(toflow.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
+
     pprint.pprint(expression)
+
     pprint.pprint(true_items)
+    for i in true_items:
+      mapped_drawer = toflow.identify_translate_to(i)
+      pprint.pprint(mapped_drawer)
+
     pprint.pprint(else_items)
+    for i in else_items:
+      mapped_drawer = toflow.identify_translate_to(i)
+      pprint.pprint(mapped_drawer)
+
     pprint.pprint(elif_items)
+    for i in else_items:
+      mapped_drawer = toflow.identify_translate_to(i)
+      pprint.pprint(mapped_drawer)
 
 
 def deep_parse(root_node, node_type='add_process'):
@@ -129,6 +143,7 @@ def deep_parse(root_node, node_type='add_process'):
   return root_node
 
 
+# Deep parse the shallow parsed tree
 for node in drawable_stack:
   n_type = node[0]
   deep_parse(node[1], n_type)
