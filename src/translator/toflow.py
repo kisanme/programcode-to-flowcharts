@@ -91,8 +91,10 @@ def x_get_node_values(node):
     return node
 
 
-def get_node_values(node):
+def get_node_values(node, key=''):
   if isinstance(node, dict):
+    if not key == '':
+      return node.get(key, None)
     return node.get('nodes', None)
   else:
     return

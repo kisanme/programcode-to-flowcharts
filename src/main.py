@@ -102,6 +102,20 @@ def io_node(node):
   return out
 
 
+def decision_node(node):
+  node_type = toflow.get_node_type(node)
+  print('NODE:TYPE: ', node_type)
+  if node_type == 'If':
+    expression = toflow.get_node_values(node[1], 'expr')
+    true_items = toflow.get_node_values(node[1], 'node')
+    elif_items = toflow.get_node_values(node[1], 'elseifs')
+    else_items = toflow.get_node_values(node[1], 'else_')
+    pprint.pprint(expression)
+    pprint.pprint(true_items)
+    pprint.pprint(else_items)
+    pprint.pprint(elif_items)
+
+
 def deep_parse(root_node, node_type='add_process'):
   parse_val = ''
   if node_type == 'add_io':
@@ -111,6 +125,7 @@ def deep_parse(root_node, node_type='add_process'):
     # print(toflow.get_node_type(root_node))
   elif node_type == 'add_decision':
     print('DECISION')
+    decision_node(root_node)
   return root_node
 
 
