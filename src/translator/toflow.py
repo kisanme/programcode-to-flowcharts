@@ -1,5 +1,5 @@
 # Or rather check for the attribute 'nodes' and traverse
-traverse_node_types = [
+traverse_node_types = {
   'Block',
   'ListAssignment',
   'Global',
@@ -23,7 +23,14 @@ traverse_node_types = [
   'Case',
   'Default',
   'ConstantDeclarations'
-]
+}
+
+fields = {
+  'If': 'expr',
+  'Else': 'expr',
+  'Echo': 'nodes',
+  'BinaryOp': ['op', 'left', 'right']
+}
 
 
 def get_node_name(node):
@@ -31,14 +38,28 @@ def get_node_name(node):
 
 
 def get_node_type(node):
+  if isinstance(node, str):
+    return node
   if not node[0]:
     return
   return node[0]
 
 
+# TODO
+# This needs modification,
+# node_type should work based on a dictionary of key value pairs
+def get_child(node_type, node):
+  if node.get(node_type):
+    return node[node_type]
+
+
 def get_nodes(node):
   if node.get('nodes'):
     return node['nodes']
+  elif node.get('node'):
+    return node['node']
+  elif node.get('else_'):
+    return node.get['else_']
   return False
 
 
@@ -48,8 +69,40 @@ def get_node_attributes(node):
   return node[1]
 
 
+def x_get_node_values(node):
+  response = {}
+  if isinstance(node, tuple):
+    node_field = fields[get_node_type(node)]
+
+    if isinstance(node_field, list):
+      for field in node_field:
+        response[field] = node[1][field]
+        # print('response within loop', field, response[field])
+        get_node_values(response[field])
+      # print('response', response)
+    else:
+      # print('response non instance', node[1][node_field])
+      get_node_values(node[1][node_field])
+  elif isinstance(node, list):
+    print("dictionary", type(node), node)
+    return node
+  else:
+    # print('response none', node)
+    return node
+
+
+def get_node_values(node):
+  if isinstance(node, dict):
+    return node.get('nodes', None)
+  else:
+    return
+
+# This is not the ideal way to test the leaf node.
+# TODO - modify this to see how many elements are contained within the node to check whether its a leaf node
 def is_leaf_node(node):
-  if isinstance(node, str):
+  if isinstance(node, (str, int)):
+    return True
+  elif len(node) == 1:
     return True
   else:
     return False
@@ -75,6 +128,7 @@ def is_decision(node):
 def is_io(node):
   input_outputs = [
     'Constant',
+    'Echo',
     'Variable',
     'StaticVariable',
     'LexicalVariable',
@@ -87,11 +141,10 @@ def is_io(node):
   return False
 
 
-def is_process(node):
+def is_process(node_type):
   processes = [
     'Assignment',
     'ListAssignment',
-    'Echo',
     'Print',
     'Unset',
     'Try',
@@ -103,18 +156,26 @@ def is_process(node):
     'StaticMethodCall'
   ]
 
-  if get_node_type(node) in processes:
+  if get_node_type(node_type) in processes:
     return True
   return False
 
 
-def identify_translate_to(node):
-  print(node)
-  if is_decision(node):
+def identify_translate_to(node_type):
+  if is_decision(node_type):
     return 'add_decision'
-  elif is_process(node):
+  elif is_process(node_type):
     return 'add_process'
-  elif is_io(node):
+  elif is_io(node_type):
     return 'add_io'
   else:
     return False
+
+
+def get_var_name(var_node):
+  if isinstance(var_node, tuple):
+    return var_node[1].get('name', None)
+  elif isinstance(var_node, dict):
+    return var_node.get('name', None)
+  else:
+    return None

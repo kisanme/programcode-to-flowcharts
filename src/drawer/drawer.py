@@ -17,7 +17,7 @@ class Drawer(object):
     self.initialize_drawing()
 
   def initialize_drawing(self):
-    self.gr = pygraphviz.AGraph(directed=True, strict=True, rankdir='LR')
+    self.gr = pygraphviz.AGraph(directed=True, rankdir='TB', )
     self.gr.node_attr['shape'] = 'rectangle'
     self.gr.add_node('Start', shape='ellipse')
 
@@ -33,10 +33,10 @@ class Drawer(object):
   def connect(self, from_node, to_node, connect_name=''):
     self.gr.add_edge(from_node, to_node, label=connect_name)
 
-  def end(self, from_node):
+  def end(self, from_node, edge_name=''):
     end_name = 'End'
     self.gr.add_node(end_name, shape='ellipse')
-    self.connect(from_node, end_name)
+    self.connect(from_node, end_name, edge_name)
 
   def get_drawing(self):
     return self.gr
