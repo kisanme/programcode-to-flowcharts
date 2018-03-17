@@ -108,24 +108,25 @@ def decision_node(node):
   if node_type == 'If':
     expression = toflow.get_node_values(node[1], 'expr')
     true_items = toflow.get_node_values(toflow.get_node_values(node[1], 'node')[1], 'nodes')
-    elif_items = toflow.get_node_values(toflow.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block')
+    elif_items = toflow.get_node_values(toflow.get_node_values(toflow.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block'), 'nodes')
     # elif_items = toflow.get_node_values(node[1], 'elseifs')[0]
     else_items = toflow.get_node_values(toflow.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
 
-    pprint.pprint(expression)
+    # pprint.pprint(expression)
 
-    pprint.pprint(true_items)
+    # pprint.pprint(true_items)
     for i in true_items:
       mapped_drawer = toflow.identify_translate_to(i)
       pprint.pprint(mapped_drawer)
 
-    pprint.pprint(else_items)
+    # pprint.pprint(else_items)
     for i in else_items:
       mapped_drawer = toflow.identify_translate_to(i)
       pprint.pprint(mapped_drawer)
 
     pprint.pprint(elif_items)
-    for i in else_items:
+    for i in elif_items:
+      print(i)
       mapped_drawer = toflow.identify_translate_to(i)
       pprint.pprint(mapped_drawer)
 

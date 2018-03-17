@@ -9,8 +9,9 @@ class BasicClass {
 //			echo ("jinthu");
 //			nestedIfEvaluation();
 		}
-		elseif (2==2) {
-			echo ("Hello");
+		elseif (2==2)
+		{
+//			echo ("Hello");
 			$x = 3;
 		}
 		else
