@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  toflow:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    tty: true
+#    ports:
+#      - "8000:8000"
