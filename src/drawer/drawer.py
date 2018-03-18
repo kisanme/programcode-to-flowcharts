@@ -21,14 +21,14 @@ class Drawer(object):
     self.gr.node_attr['shape'] = 'rectangle'
     self.gr.add_node('Start', shape='ellipse')
 
-  def add_process(self, process_name):
-    self.gr.add_node(process_name, shape='rectangle')
+  def add_process(self, process_name, nid):
+    self.gr.add_node(nid, label=process_name, shape='rectangle')
 
-  def add_io(self, io_name):
-    self.gr.add_node(io_name, shape='parallelogram')
+  def add_io(self, io_name, nid):
+    self.gr.add_node(nid, label=io_name, shape='parallelogram')
 
-  def add_decision(self, decision_name):
-    self.gr.add_node(decision_name, shape='diamond')
+  def add_decision(self, decision_name, nid):
+    self.gr.add_node(nid, label=decision_name, shape='diamond')
 
   def connect(self, from_node, to_node, connect_name=''):
     self.gr.add_edge(from_node, to_node, label=connect_name)
