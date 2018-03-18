@@ -195,12 +195,38 @@ def get_var_expression(var_node):
   elif isinstance(var_node, dict):
     return str(var_node.get('expr', None))
   else:
-    return None
+    return ''
 
 
 def get_echo_text(echo_node):
   if isinstance(echo_node, list):
     return ' '.join(echo_node)
+
+
+def get_function_name(function_call):
+  if isinstance(function_call, dict):
+    return function_call.get('name')
+  return ''
+
+
+def get_function_params(function_call):
+  parameters = []
+  # Obtained as a list of parameters
+  if isinstance(function_call, list):
+    for param in function_call:
+      if isinstance(param, tuple):
+        # A string or integer parameter would be identified here
+        item = get_node_values(param[1], 'node')
+        # In-case of a variable, we'd need to go into another level
+        if isinstance(item, tuple) and item[0] == 'Variable':
+          item = get_node_values(item[1], 'name')
+        # In-case of a string parameter, it needs be reflected
+        # Variables are strings too ;)
+        if isinstance(item, str) and item[0] != "$":
+          item = '"' + item + '"'
+        # Appends to a list, which will consequently be used for join() method
+        parameters.append((str(item)))
+  return ', '.join(parameters)
 
 
 def get_processed_text_from_node(node):
@@ -212,6 +238,8 @@ def get_processed_text_from_node(node):
       output_text = var_name + ' = ' + var_value
     elif node[0] == 'Echo':
       output_text = 'echo("' + get_echo_text(get_node_values(node[1], 'nodes')) + '")'
-
+    elif node[0] == 'FunctionCall':
+      func_name = get_function_name(node[1])
+      output_text = func_name + '(' + get_function_params(get_node_values(node[1], 'params')) + ')'
   return output_text
 

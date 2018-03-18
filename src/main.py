@@ -90,15 +90,17 @@ print('Drawable stack: ')
 pprint.pprint(drawable_stack)
 
 
-processed_drawables = []
+processed_drawables = {}
+drawing_item = 1;
 
 
 def io_node(node):
   node_type = tf.get_node_type(node)
   out = ''
   if node_type == 'Echo':
-    item = tf.get_node_values(node[1])[0]
-    out = 'echo ("'+item+'")'
+    item = tf.get_node_values(node[1])
+    out = 'echo ("' + tf.get_echo_text(item) + '")'
+    print(out)
   return out
 
 
@@ -114,7 +116,7 @@ def decision_node(node):
     # pprint.pprint(expression)
 
     print()
-    pprint.pprint(true_items)
+    # pprint.pprint(true_items)
     for i in true_items:
       print('true item: ')
       mapped_drawer = tf.identify_translate_to(i)
@@ -122,18 +124,19 @@ def decision_node(node):
       print(mapped_drawer)
       print(shape_text)
 
-    # print()
+    print()
     # pprint.pprint(else_items)
     for i in else_items:
+      print('else item: ')
       mapped_drawer = tf.identify_translate_to(i)
       shape_text = tf.get_processed_text_from_node(i)
       print(mapped_drawer)
       print(shape_text)
 
     print()
-    pprint.pprint(elif_items)
+    # pprint.pprint(elif_items)
     for i in elif_items:
-      print(i)
+      print('else if items: ')
       mapped_drawer = tf.identify_translate_to(i)
       shape_text = tf.get_processed_text_from_node(i)
       print(mapped_drawer)

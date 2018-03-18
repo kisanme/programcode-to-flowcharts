@@ -9,8 +9,8 @@ class BasicClass {
 //		        echo ("HINDRANCE");
 //		    }
 			echo ("printing hello");
-//			echo ("jinthu");
-//			nestedIfEvaluation();
+			echo ("jinthu");
+			nestedIfEvaluation(1, "Hell", $xx);
 		}
 		elseif (2==2)
 		{
