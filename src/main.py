@@ -107,11 +107,17 @@ def io_node(node):
 def decision_node(node):
   node_type = tf.get_node_type(node)
   if node_type == 'If':
+    elif_items = []
+    else_items = []
+
     expression = tf.get_node_values(node[1], 'expr')
     true_items = tf.get_node_values(tf.get_node_values(node[1], 'node')[1], 'nodes')
-    elif_items = tf.get_node_values(tf.get_node_values(tf.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block'), 'nodes')
-    # elif_items = tf.get_node_values(node[1], 'elseifs')[0]
-    else_items = tf.get_node_values(tf.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
+    # Else-if could be not present in the logic
+    if tf.get_node_values(node[1], 'elseifs'):
+      elif_items = tf.get_node_values(tf.get_node_values(tf.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block'), 'nodes')
+    # Else could be not present in the logic
+    if tf.get_node_values(node[1], 'else_'):
+      else_items = tf.get_node_values(tf.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
 
     # pprint.pprint(expression)
 
