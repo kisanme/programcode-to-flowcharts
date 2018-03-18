@@ -126,14 +126,18 @@ def decision_node(node):
     # pprint.pprint(else_items)
     for i in else_items:
       mapped_drawer = tf.identify_translate_to(i)
-      # print(mapped_drawer)
+      shape_text = tf.get_processed_text_from_node(i)
+      print(mapped_drawer)
+      print(shape_text)
 
     print()
     pprint.pprint(elif_items)
     for i in elif_items:
       print(i)
       mapped_drawer = tf.identify_translate_to(i)
+      shape_text = tf.get_processed_text_from_node(i)
       print(mapped_drawer)
+      print(shape_text)
   elif node_type == 'While':
     print('While Node')
 
