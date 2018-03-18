@@ -5,13 +5,16 @@ class BasicClass {
 	public function helloConditional() {
 		if (1 == 2) {
 		    $x = 2;
-//			echo ("printing hello");
+//		    if ($x == 2) {
+//		        echo ("HINDRANCE");
+//		    }
+			echo ("printing hello");
 //			echo ("jinthu");
 //			nestedIfEvaluation();
 		}
 		elseif (2==2)
 		{
-//			echo ("Hello");
+			echo ("Hello");
 			$x = 3;
 		}
 		else

@@ -104,7 +104,6 @@ def io_node(node):
 
 def decision_node(node):
   node_type = tf.get_node_type(node)
-  print('NODE:TYPE: ', node_type)
   if node_type == 'If':
     expression = tf.get_node_values(node[1], 'expr')
     true_items = tf.get_node_values(tf.get_node_values(node[1], 'node')[1], 'nodes')
@@ -114,21 +113,29 @@ def decision_node(node):
 
     # pprint.pprint(expression)
 
-    # pprint.pprint(true_items)
+    print()
+    pprint.pprint(true_items)
     for i in true_items:
+      print('true item: ')
       mapped_drawer = tf.identify_translate_to(i)
-      pprint.pprint(mapped_drawer)
+      shape_text = tf.get_processed_text_from_node(i)
+      print(mapped_drawer)
+      print(shape_text)
 
+    # print()
     # pprint.pprint(else_items)
     for i in else_items:
       mapped_drawer = tf.identify_translate_to(i)
-      pprint.pprint(mapped_drawer)
+      # print(mapped_drawer)
 
+    print()
     pprint.pprint(elif_items)
     for i in elif_items:
       print(i)
       mapped_drawer = tf.identify_translate_to(i)
-      pprint.pprint(mapped_drawer)
+      print(mapped_drawer)
+  elif node_type == 'While':
+    print('While Node')
 
 
 def deep_parse(root_node, node_type='add_process'):
@@ -147,6 +154,8 @@ def deep_parse(root_node, node_type='add_process'):
 # Deep parse the shallow parsed tree
 for node in drawable_stack:
   n_type = node[0]
+  print()
+  print()
   deep_parse(node[1], n_type)
 
 # Test some imperative style coding

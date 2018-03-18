@@ -180,9 +180,38 @@ def identify_translate_to(node_type):
 
 
 def get_var_name(var_node):
+  print(var_node)
   if isinstance(var_node, tuple):
-    return var_node[1].get('name', None)
+    return var_node[1].get('name', '')
   elif isinstance(var_node, dict):
-    return var_node.get('name', None)
+    return var_node.get('name', '')
   else:
     return None
+
+
+def get_var_expression(var_node):
+  if isinstance(var_node, tuple):
+    return str(var_node[1].get('expr', None))
+  elif isinstance(var_node, dict):
+    return str(var_node.get('expr', None))
+  else:
+    return None
+
+
+def get_echo_text(echo_node):
+  if isinstance(echo_node, list):
+    return ' '.join(echo_node)
+
+
+def get_processed_text_from_node(node):
+  output_text = ''
+  if isinstance(node, tuple):
+    if node[0] == 'Assignment':
+      var_name = get_var_name(get_node_values(node[1], 'node'))
+      var_value = get_var_expression(node)
+      output_text = var_name + ' = ' + var_value
+    elif node[0] == 'Echo':
+      output_text = 'echo("' + get_echo_text(get_node_values(node[1], 'nodes')) + '")'
+
+  return output_text
+
