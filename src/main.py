@@ -1,6 +1,6 @@
 import lib.phplex as phplex
 import lib.phpparse as yacc_parse
-import translator.toflow as toflow
+import translator.toflow as tf
 from itertools import tee, islice, chain
 import pprint
 import classifier.classifier as classifier
@@ -21,30 +21,30 @@ def recursive_shallow_parsing(nodes):
     return
 
   # If the node is a leaf node, will return the node itself.
-  if toflow.is_leaf_node(nodes):
+  if tf.is_leaf_node(nodes):
     return nodes
   else:
     for node in nodes:
-      if not toflow.is_leaf_node(node):
+      if not tf.is_leaf_node(node):
         if isinstance(node, tuple):
-          # recursive_shallow_parsing(toflow.get_child(toflow.get_node_type(node), toflow.get_node_attributes(node)))
-          node_type = toflow.identify_translate_to(node)
+          # recursive_shallow_parsing(tf.get_child(tf.get_node_type(node), tf.get_node_attributes(node)))
+          node_type = tf.identify_translate_to(node)
           drawable = (node_type, node)
           if drawable[0] is not False:
             drawable_stack.append(drawable)
-          processed_node = recursive_shallow_parsing(toflow.get_nodes(toflow.get_node_attributes(node)))
-          # drawable_stack.append((toflow.get_node_typ(node), recursive_shallow_parsing(toflow.get_nodes(node))))
+          processed_node = recursive_shallow_parsing(tf.get_nodes(tf.get_node_attributes(node)))
+          # drawable_stack.append((tf.get_node_typ(node), recursive_shallow_parsing(tf.get_nodes(node))))
         else:
-          processed_node = recursive_shallow_parsing(toflow.get_nodes(node))
+          processed_node = recursive_shallow_parsing(tf.get_nodes(node))
           if processed_node is not None:
             # This is buggy: It only checks the very first node item, say the first statement of the block
-            drawable = toflow.identify_translate_to(processed_node[0]), processed_node
+            drawable = tf.identify_translate_to(processed_node[0]), processed_node
             # drawable_stack.append(drawable)
             # if drawable[0] is not False:
             #   drawable_stack.append(drawable)
             # print('drawable (from list):', drawable_stack)
           # #print('processed_node list:', processed_node)
-          # drawable_stack.append((toflow.get_node_type(node), recursive_shallow_parsing(toflow.get_nodes(node))))
+          # drawable_stack.append((tf.get_node_type(node), recursive_shallow_parsing(tf.get_nodes(node))))
   return nodes
 
 
@@ -94,40 +94,40 @@ processed_drawables = []
 
 
 def io_node(node):
-  node_type = toflow.get_node_type(node)
+  node_type = tf.get_node_type(node)
   out = ''
   if node_type == 'Echo':
-    item = toflow.get_node_values(node[1])[0]
+    item = tf.get_node_values(node[1])[0]
     out = 'echo ("'+item+'")'
   return out
 
 
 def decision_node(node):
-  node_type = toflow.get_node_type(node)
+  node_type = tf.get_node_type(node)
   print('NODE:TYPE: ', node_type)
   if node_type == 'If':
-    expression = toflow.get_node_values(node[1], 'expr')
-    true_items = toflow.get_node_values(toflow.get_node_values(node[1], 'node')[1], 'nodes')
-    elif_items = toflow.get_node_values(toflow.get_node_values(toflow.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block'), 'nodes')
-    # elif_items = toflow.get_node_values(node[1], 'elseifs')[0]
-    else_items = toflow.get_node_values(toflow.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
+    expression = tf.get_node_values(node[1], 'expr')
+    true_items = tf.get_node_values(tf.get_node_values(node[1], 'node')[1], 'nodes')
+    elif_items = tf.get_node_values(tf.get_node_values(tf.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block'), 'nodes')
+    # elif_items = tf.get_node_values(node[1], 'elseifs')[0]
+    else_items = tf.get_node_values(tf.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
 
     # pprint.pprint(expression)
 
     # pprint.pprint(true_items)
     for i in true_items:
-      mapped_drawer = toflow.identify_translate_to(i)
+      mapped_drawer = tf.identify_translate_to(i)
       pprint.pprint(mapped_drawer)
 
     # pprint.pprint(else_items)
     for i in else_items:
-      mapped_drawer = toflow.identify_translate_to(i)
+      mapped_drawer = tf.identify_translate_to(i)
       pprint.pprint(mapped_drawer)
 
     pprint.pprint(elif_items)
     for i in elif_items:
       print(i)
-      mapped_drawer = toflow.identify_translate_to(i)
+      mapped_drawer = tf.identify_translate_to(i)
       pprint.pprint(mapped_drawer)
 
 
@@ -137,7 +137,7 @@ def deep_parse(root_node, node_type='add_process'):
     parse_val = (io_node(root_node))
   elif node_type == 'add_process':
     print("Process")
-    # print(toflow.get_node_type(root_node))
+    # print(tf.get_node_type(root_node))
   elif node_type == 'add_decision':
     print('DECISION')
     decision_node(root_node)
@@ -183,12 +183,12 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
         getattr(x, 'add_process')(inner_item)
         x.connect('If (1== 2)', inner_item, 'False')
         x.end(inner_item)
-      # print('item value', toflow.get_node_values(drawing_entity[1]))
+      # print('item value', tf.get_node_values(drawing_entity[1]))
       # print(drawing_entity[1][1]['expr'])
     else:
       item_name = 'echo ("' + drawing_entity[1][1]['nodes'][0] + '")'
       # print('item', drawing_entity[1])
-      # print('item value', toflow.get_node_values(drawing_entity[1]))
+      # print('item value', tf.get_node_values(drawing_entity[1]))
       getattr(x, drawing_entity[0])(item_name)
 
   # Connection logic
