@@ -98,9 +98,12 @@ def io_node(node):
   node_type = tf.get_node_type(node)
   out = ''
   if node_type == 'Echo':
+    # Echo output preparation can use the centralized method: tf.get_processed_text_from_node(node)
+    item_type = tf.identify_translate_to(node)
     item = tf.get_node_values(node[1])
     out = 'echo ("' + tf.get_echo_text(item) + '")'
-    print(out)
+    print('ECHO TYPE: ', item_type)
+    print('ECHO OUTPUT: ', out)
   return out
 
 
@@ -119,7 +122,10 @@ def decision_node(node):
     if tf.get_node_values(node[1], 'else_'):
       else_items = tf.get_node_values(tf.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
 
+    print('EXPRESSION: ')
     # pprint.pprint(expression)
+    shape_text = tf.get_processed_text_from_node(expression)
+    print(shape_text)
 
     print()
     # pprint.pprint(true_items)
@@ -170,6 +176,7 @@ for node in drawable_stack:
   print()
   print()
   deep_parse(node[1], n_type)
+
 
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)

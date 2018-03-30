@@ -229,6 +229,30 @@ def get_function_params(function_call):
   return ', '.join(parameters)
 
 
+def recursive_binaryop_parse(node, out_text):
+  if isinstance(node, str) or isinstance(node, int):
+    l_operand = get_node_values(node, 'left')
+    operator = get_node_values(node, 'op')
+    r_operand = get_node_values(node, 'right')
+    out_text = str(l_operand) + str(operator) + str(r_operand)
+
+  l_node = get_node_values(node[1], 'left')
+  r_node = get_node_values(node, 'right')
+  for left in l_node:
+    if not (isinstance(left, str) or isinstance(left, int)):
+      lef = get_node_values(left, 'left')
+      if isinstance(lef, tuple):
+        for lef in left:
+          print(lef)
+          if not isinstance(lef, str):
+            le = get_node_values(lef[1], 'left')
+            print(le)
+
+      print(lef)
+  return out_text
+
+
+
 def get_processed_text_from_node(node):
   output_text = ''
   if isinstance(node, tuple):
@@ -241,5 +265,12 @@ def get_processed_text_from_node(node):
     elif node[0] == 'FunctionCall':
       func_name = get_function_name(node[1])
       output_text = func_name + '(' + get_function_params(get_node_values(node[1], 'params')) + ')'
+    elif node[0] == 'BinaryOp':
+      l_operand = get_node_values(node[1], 'left')
+      operator = get_node_values(node[1], 'op')
+      r_operand = get_node_values(node[1], 'right')
+      output_text = str(l_operand) + operator + str(r_operand)
+      print(node)
+      output_text = recursive_binaryop_parse(node, '')
   return output_text
 

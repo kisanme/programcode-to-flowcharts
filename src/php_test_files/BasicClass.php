@@ -3,7 +3,10 @@
 class BasicClass {
 
 	public function helloConditional() {
-		if (1 == 2) {
+//		if (1 == 2) {
+        // // Both the following may look same, but they are different - the left-associativity
+//		if (1 == 2 && (2 == 2 || 3 == 3)) {
+		if (1 == 2 && 2 == 2 || 3 == 3) {
 		    $x = 2;
 //		    if ($x == 2) {
 //		        echo ("HINDRANCE");
