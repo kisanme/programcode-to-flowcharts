@@ -7,6 +7,7 @@ import classifier.classifier as classifier
 import drawer.drawer as fl_drawer
 
 drawable_stack = []
+drawing_node = 0
 
 
 # Parsing invocation
@@ -100,10 +101,10 @@ drawing_item = 1;
 '''
 def io_node(node):
   shape = tf.identify_translate_to(node)
-  out = tf.get_processed_text_from_node(node)
+  output_text = tf.get_processed_text_from_node(node)
   print(shape)
-  print(out)
-  return out
+  print(output_text)
+  return shape, output_text 
 
 
 '''
@@ -160,6 +161,7 @@ def decision_node(node):
       print(shape_text)
   elif node_type == 'While':
     print('While Node')
+  return (tf.identify_translate_to(node), '')
 
 
 '''
@@ -169,9 +171,9 @@ def decision_node(node):
 def process_node(node):
   shape = tf.identify_translate_to(node)
   print(shape)
-  out = tf.get_processed_text_from_node(node)
-  print(out)
-  return out
+  output_text = tf.get_processed_text_from_node(node)
+  print(output_text)
+  return shape, output_text
 
 
 '''
@@ -181,14 +183,17 @@ def process_node(node):
 def deep_parse(root_node, node_type='add_process'):
   parse_val = ''
   if node_type == 'add_io':
-    parse_val = io_node(root_node)
-    print(parse_val)
+    print("IO")
+    shape, output_text = io_node(root_node)
+    print(shape, output_text)
   elif node_type == 'add_process':
     print("Process")
-    parse_val = process_node(root_node)
+    shape, output_text = process_node(root_node)
+    print(shape, output_text)
   elif node_type == 'add_decision':
     print('DECISION')
-    decision_node(root_node)
+    shape, output_text = decision_node(root_node)
+    print(shape, output_text)
   return root_node
 
 

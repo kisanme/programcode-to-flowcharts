@@ -16,6 +16,10 @@ class BasicClass {
 			echo ("jinthu");
 			nestedIfEvaluation(1, "Hell", $xx);
 		}
+		elseif (3==2)
+		{
+			echo ("Brrrr");
+		}
 		elseif (2==2)
 		{
 			echo ("Hello");
