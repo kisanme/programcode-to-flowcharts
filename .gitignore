@@ -186,6 +186,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#VS CODE
+.vscode
+
 # Project specific
 outputs
 src/lib/parsetab.py

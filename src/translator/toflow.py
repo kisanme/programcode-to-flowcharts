@@ -99,8 +99,10 @@ def get_node_values(node, key=''):
   elif isinstance(node, tuple):
     if key == 'Block' and node[0] == 'Block':
       return node[1]
+    elif (key == 'left' or key == 'right') and node[0] == 'Variable':
+      return node[1]['name']
     else:
-      return node
+      return node[1][key]
   else:
     return
 
@@ -229,26 +231,70 @@ def get_function_params(function_call):
   return ', '.join(parameters)
 
 
+# Returns binary value of whether the comparison operator is
+def is_composite_operator(node):
+  composite_operators = ['&&', '||', 'and', 'or', 'xor']
+  if isinstance(node, tuple):
+    # If the input is like: ('BinaryOp', {'op': '==', 'left': 1, 'right': 2})
+    if node[1]['op'] in composite_operators:
+      return True
+  elif isinstance(node, dict):
+    # If the input is like: {'op': '==', 'left': 1, 'right': 2}
+    if node['op'] in composite_operators:
+      return True
+  return False
+
+
+# Recursively evaluates binary operation of
+#   if and elseif and while condition blocks
 def recursive_binaryop_parse(node, out_text):
-  if isinstance(node, str) or isinstance(node, int):
+  non_recursive_bops = [
+    'Variable',
+    'IsSet',
+    'Empty'
+  ]
+
+  # If the node isn't a tuple
+  # eg: 1, 2, $x, $y
+  # Returns the passed out_text as it is
+  if not isinstance(node, tuple):
+    return out_text
+
+  # When special set of functions are used within the if expression
+  # eg: isset($x) or empty($x)
+  # returns the processed output text within this block
+  if isinstance(node, tuple) and (node[0] in non_recursive_bops):
+    if node[0] == 'IsSet':
+      within_params = get_node_values(node[1], 'nodes')
+      return 'isset(' + str(get_node_values(within_params[0][1], 'name')) + ')'
+    if node[0] == 'Empty':
+      within_params = get_node_values(node[1], 'expr')
+      return 'empty(' + str(get_node_values(within_params[1], 'name')) + ')'
+    return out_text
+
+  # When the node under evaluation isn't composite
+  # This transform the conditional clauses into strings of conditional clauses
+  # Returns the output text of non-recursive constructs
+  # e.g Returns 1 == 2, 1 >= 2
+  if not is_composite_operator(node):
     l_operand = get_node_values(node, 'left')
     operator = get_node_values(node, 'op')
     r_operand = get_node_values(node, 'right')
+    if isinstance(l_operand, tuple):
+      l_operand = get_node_values(l_operand, 'name')
+    if isinstance(r_operand, tuple):
+      r_operand = get_node_values(r_operand, 'name')
     out_text = str(l_operand) + str(operator) + str(r_operand)
+    return out_text
 
-  l_node = get_node_values(node[1], 'left')
-  r_node = get_node_values(node, 'right')
-  for left in l_node:
-    if not (isinstance(left, str) or isinstance(left, int)):
-      lef = get_node_values(left, 'left')
-      if isinstance(lef, tuple):
-        for lef in left:
-          print(lef)
-          if not isinstance(lef, str):
-            le = get_node_values(lef[1], 'left')
-            print(le)
+  # Recursive callee block
+  # Uses left and right recursions to construct the ultimate if conditional expression
+  # returns $x == 2 && 2 >= 1 || isset($x)
+  if isinstance(node, tuple) and node[0] == 'BinaryOp':
+    for n_item in node[1]:
+      if not n_item == 'op':
+        out_text = recursive_binaryop_parse(node[1]['left'], out_text) + ' ' + str(node[1]['op']) + ' ' + recursive_binaryop_parse(node[1]['right'], out_text) + ' '
 
-      print(lef)
   return out_text
 
 
@@ -270,7 +316,6 @@ def get_processed_text_from_node(node):
       operator = get_node_values(node[1], 'op')
       r_operand = get_node_values(node[1], 'right')
       output_text = str(l_operand) + operator + str(r_operand)
-      print(node)
       output_text = recursive_binaryop_parse(node, '')
   return output_text
 
