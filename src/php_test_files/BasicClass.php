@@ -19,6 +19,8 @@ class BasicClass {
 		elseif (2==2)
 		{
 			echo ("Hello");
+			$x[0] = 3;
+			$x[] = 3;
 			$x = 3;
 		}
 		else
