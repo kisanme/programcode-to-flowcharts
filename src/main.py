@@ -94,11 +94,22 @@ processed_drawables = {}
 drawing_item = 1;
 
 
+'''
+  IO node manipulation.
+  The node will be obtained after shallow parsing.
+'''
 def io_node(node):
+  shape = tf.identify_translate_to(node)
   out = tf.get_processed_text_from_node(node)
+  print(shape)
+  print(out)
   return out
 
 
+'''
+  Decision node manipulation.
+  The node will be obtained after shallow parsing.
+'''
 def decision_node(node):
   node_type = tf.get_node_type(node)
   if node_type == 'If':
@@ -151,6 +162,10 @@ def decision_node(node):
     print('While Node')
 
 
+'''
+  Process node manipulation.
+  The node will be obtained after shallow parsing.
+'''
 def process_node(node):
   shape = tf.identify_translate_to(node)
   print(shape)
@@ -159,16 +174,18 @@ def process_node(node):
   return out
 
 
+'''
+  Parsing in-depth (recursive parsing)
+  The root_node is obtained after shallow parsing.
+'''
 def deep_parse(root_node, node_type='add_process'):
   parse_val = ''
   if node_type == 'add_io':
-    parse_val = (io_node(root_node))
+    parse_val = io_node(root_node)
     print(parse_val)
   elif node_type == 'add_process':
     print("Process")
     parse_val = process_node(root_node)
-    print(parse_val)
-    print(tf.get_node_type(root_node))
   elif node_type == 'add_decision':
     print('DECISION')
     decision_node(root_node)

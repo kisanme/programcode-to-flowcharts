@@ -6,6 +6,7 @@ class BasicClass {
 //		if (1 == 2) {
         // // Both the following may look same, but they are different - the left-associativity
 //		if (1 == 2 && (2 == 2 || 3 == 3)) {
+		echo('hello world is a nice text');
 		if (1 == 2 && $x <= 2 && 3 >= 3 || 4 == 4 && $x == 2 || empty($x)) {
 		    $x = 2;
 //		    if ($x == 2) {
@@ -27,6 +28,7 @@ class BasicClass {
 		echo "Afterwards";
 		$hi = new Carbon('29-10-2018');
 		// $abc = isset($hi);
+		$abc = nestedIfEvaluation($hi);
 		$hello = $hi->date(1,2,3);
 		$hi->is_object(1,2,4,5);
 		hello(1,2,3);
