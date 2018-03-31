@@ -212,21 +212,45 @@ def get_new_object(var_node):
   return exp
 
 
+def get_function_call(var_node):
+  exp = get_function_name(var_node[1])
+  exp += '('
+  exp += get_function_params(var_node[1]['params'])
+  exp += ')'
+  return exp
+
+
+# Returns the variable RHS value
+#   @params var_node is the variable assignment node itself
+# e.g: $hi = $hello->world();
 def get_var_expression(var_node):
   if isinstance(var_node, tuple):
     exp = var_node[1].get('expr', None)
-    print('Obtained expression before:', exp)
 
+    '''
+      If the assigning value is a method call
+      e.g $hi = $hello->world();
+    '''
     if (exp is None) and var_node[0] == 'MethodCall':
       exp = get_method_call(var_node)
 
+    ''' 
+      If the assigning value is a new object creation
+      e.g: $hi = new Carbon();
+    '''
     if isinstance(exp, tuple) and exp[0] == 'New':
-      print('NEW item', exp)
       exp = get_new_object(exp)
 
-    print('Obtained expression after:', exp)
-    if isinstance(exp, tuple) and not (exp[0] == 'New'):
-      exp = get_var_expression(exp)
+    ''' 
+      If the assigning value is a function call
+      e.g: $hi = toToHell('as');
+    '''
+    if isinstance(exp, tuple) and exp[0] == 'FunctionCall':
+      exp = get_function_call(exp)
+
+    # if isinstance(exp, tuple) and not (exp[0] == 'New'):
+    #   exp = get_var_expression(exp)
+
     return str(exp)
   elif isinstance(var_node, dict):
     return str(var_node.get('expr', None))
@@ -351,17 +375,14 @@ def get_processed_text_from_node(node):
   output_text = ''
   if isinstance(node, tuple):
     if node[0] == 'Assignment':
-      print('Tis a tuple')
       var_name = get_var_name(get_node_values(node[1], 'node'))
       var_value = get_var_expression(node)
-      print(type(var_value))
       if isinstance(var_value, tuple):
         var_value = get_processed_text_from_node(var_value)
       output_text = var_name + ' = ' + var_value
     elif node[0] == 'Echo':
       output_text = 'echo("' + get_echo_text(get_node_values(node[1], 'nodes')) + '")'
     elif node[0] == 'FunctionCall':
-      print(node)
       func_name = get_function_name(node[1])
       output_text = func_name + '(' + get_function_params(get_node_values(node[1], 'params')) + ')'
     elif node[0] == 'MethodCall':
