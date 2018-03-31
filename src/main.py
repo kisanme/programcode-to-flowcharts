@@ -95,15 +95,7 @@ drawing_item = 1;
 
 
 def io_node(node):
-  node_type = tf.get_node_type(node)
-  out = ''
-  if node_type == 'Echo':
-    # Echo output preparation can use the centralized method: tf.get_processed_text_from_node(node)
-    item_type = tf.identify_translate_to(node)
-    item = tf.get_node_values(node[1])
-    out = 'echo ("' + tf.get_echo_text(item) + '")'
-    print('ECHO TYPE: ', item_type)
-    print('ECHO OUTPUT: ', out)
+  out = tf.get_processed_text_from_node(node)
   return out
 
 
@@ -125,6 +117,8 @@ def decision_node(node):
     print('EXPRESSION: ')
     # pprint.pprint(expression)
     shape_text = tf.get_processed_text_from_node(expression)
+    mapped_drawer = tf.identify_translate_to(expression)
+    print(mapped_drawer)
     print(shape_text)
 
     print()
@@ -157,13 +151,22 @@ def decision_node(node):
     print('While Node')
 
 
+def process_node(node):
+  out = tf.get_processed_text_from_node(node)
+  return out
+
+
 def deep_parse(root_node, node_type='add_process'):
   parse_val = ''
   if node_type == 'add_io':
     parse_val = (io_node(root_node))
+    print(parse_val)
   elif node_type == 'add_process':
     print("Process")
-    # print(tf.get_node_type(root_node))
+    parse_val = process_node(root_node)
+    print(parse_val)
+    # print((root_node))
+    print(tf.get_node_type(root_node))
   elif node_type == 'add_decision':
     print('DECISION')
     decision_node(root_node)

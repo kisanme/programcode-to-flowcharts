@@ -126,7 +126,9 @@ def is_decision(node):
     'For',
     'ForEach',
     # 'Switch',
-    'Case'
+    'Case',
+    'BinaryOp'
+
   ]
 
   if get_node_type(node) in decisions:
@@ -182,7 +184,6 @@ def identify_translate_to(node_type):
 
 
 def get_var_name(var_node):
-  print(var_node)
   if isinstance(var_node, tuple):
     return var_node[1].get('name', '')
   elif isinstance(var_node, dict):
@@ -191,9 +192,42 @@ def get_var_name(var_node):
     return None
 
 
+def get_method_call(var_node):
+  exp = get_object_name(var_node[1])
+  exp += '->'
+  exp += get_object_method(var_node[1])
+  exp += '('
+  exp += get_function_params(var_node[1]['params'])
+  exp += ')'
+  return exp
+
+
+def get_new_object(var_node):
+  print('Item obtained', var_node)
+  exp = 'new '
+  exp += get_object_method(var_node[1])
+  exp += '('
+  exp += get_function_params(var_node[1]['params'])
+  exp += ')'
+  return exp
+
+
 def get_var_expression(var_node):
   if isinstance(var_node, tuple):
-    return str(var_node[1].get('expr', None))
+    exp = var_node[1].get('expr', None)
+    print('Obtained expression before:', exp)
+
+    if (exp is None) and var_node[0] == 'MethodCall':
+      exp = get_method_call(var_node)
+
+    if isinstance(exp, tuple) and exp[0] == 'New':
+      print('NEW item', exp)
+      exp = get_new_object(exp)
+
+    print('Obtained expression after:', exp)
+    if isinstance(exp, tuple) and not (exp[0] == 'New'):
+      exp = get_var_expression(exp)
+    return str(exp)
   elif isinstance(var_node, dict):
     return str(var_node.get('expr', None))
   else:
@@ -208,6 +242,21 @@ def get_echo_text(echo_node):
 def get_function_name(function_call):
   if isinstance(function_call, dict):
     return function_call.get('name')
+  return ''
+
+
+def get_object_name(method_call):
+  if isinstance(method_call, dict):
+    obj = method_call.get('node')
+    return get_node_values(obj, 'name')
+  return ''
+
+
+def get_object_method(method_call):
+  if isinstance(method_call, dict):
+    obj = method_call.get('name')
+    params = get_function_params(method_call)
+    return obj + params
   return ''
 
 
@@ -298,24 +347,38 @@ def recursive_binaryop_parse(node, out_text):
   return out_text
 
 
-
 def get_processed_text_from_node(node):
   output_text = ''
   if isinstance(node, tuple):
     if node[0] == 'Assignment':
+      print('Tis a tuple')
       var_name = get_var_name(get_node_values(node[1], 'node'))
       var_value = get_var_expression(node)
+      print(type(var_value))
+      if isinstance(var_value, tuple):
+        var_value = get_processed_text_from_node(var_value)
       output_text = var_name + ' = ' + var_value
     elif node[0] == 'Echo':
       output_text = 'echo("' + get_echo_text(get_node_values(node[1], 'nodes')) + '")'
     elif node[0] == 'FunctionCall':
+      print(node)
       func_name = get_function_name(node[1])
       output_text = func_name + '(' + get_function_params(get_node_values(node[1], 'params')) + ')'
+    elif node[0] == 'MethodCall':
+      output_text = get_object_name(node[1])
+      output_text += '->'
+      output_text += get_object_method(node[1])
+      output_text += '('
+      output_text += get_function_params(node[1]['params'])
+      output_text += ')'
+    elif node[0] == 'StaticMethodCall':
+      output_text = get_node_values(node[1], 'class_')
+      output_text += '::'
+      output_text += get_object_method(node[1])
+      output_text += '('
+      output_text += get_function_params(node[1]['params'])
+      output_text += ')'
     elif node[0] == 'BinaryOp':
-      l_operand = get_node_values(node[1], 'left')
-      operator = get_node_values(node[1], 'op')
-      r_operand = get_node_values(node[1], 'right')
-      output_text = str(l_operand) + operator + str(r_operand)
-      output_text = recursive_binaryop_parse(node, '')
+      output_text = 'if ( ' + str(recursive_binaryop_parse(node, '')) + ' )'
   return output_text
 

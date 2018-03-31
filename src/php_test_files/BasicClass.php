@@ -25,9 +25,11 @@ class BasicClass {
 			echo ("HI");
 		}
 		echo "Afterwards";
-		$hi = new Carbon();
-		$hello = $hi->date();
+		$hi = new Carbon('29-10-2018');
+		$hello = $hi->date(1,2,3);
+		$hi->is_object(1,2,4,5);
 		hello(1,2,3);
+		Carbon::helloworld(1,3,4);
 	}
 
 //	public function nestedIfEvaluation() {
