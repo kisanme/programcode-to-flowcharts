@@ -203,7 +203,6 @@ def get_method_call(var_node):
 
 
 def get_new_object(var_node):
-  print('Item obtained', var_node)
   exp = 'new '
   exp += get_object_method(var_node[1])
   exp += '('
@@ -248,8 +247,12 @@ def get_var_expression(var_node):
     if isinstance(exp, tuple) and exp[0] == 'FunctionCall':
       exp = get_function_call(exp)
 
-    # if isinstance(exp, tuple) and not (exp[0] == 'New'):
-    #   exp = get_var_expression(exp)
+    '''
+      Recursive call is necessary to identify items on the RHS like a Method Call
+      e.g: $hi = $hello->sayHello();
+    '''
+    if isinstance(exp, tuple) and not (exp[0] == 'New'):
+      exp = get_var_expression(exp)
 
     return str(exp)
   elif isinstance(var_node, dict):

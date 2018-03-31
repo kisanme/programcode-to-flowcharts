@@ -26,7 +26,7 @@ class BasicClass {
 		}
 		echo "Afterwards";
 		$hi = new Carbon('29-10-2018');
-		$abc = nestedIfEvaluation($hi);
+		// $abc = isset($hi);
 		$hello = $hi->date(1,2,3);
 		$hi->is_object(1,2,4,5);
 		hello(1,2,3);

@@ -152,7 +152,10 @@ def decision_node(node):
 
 
 def process_node(node):
+  shape = tf.identify_translate_to(node)
+  print(shape)
   out = tf.get_processed_text_from_node(node)
+  print(out)
   return out
 
 
@@ -165,7 +168,6 @@ def deep_parse(root_node, node_type='add_process'):
     print("Process")
     parse_val = process_node(root_node)
     print(parse_val)
-    # print((root_node))
     print(tf.get_node_type(root_node))
   elif node_type == 'add_decision':
     print('DECISION')
