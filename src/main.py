@@ -17,6 +17,9 @@ def parse_through_lex(file_path):
   return phplex.full_lexer
 
 
+'''
+  Level-1 parsing: No inner-blocks are parsed.
+'''
 def recursive_shallow_parsing(nodes):
   if nodes is False:
     return
@@ -49,8 +52,10 @@ def recursive_shallow_parsing(nodes):
   return nodes
 
 
-# Parsing the class item and re-assigning the first node of the node lists
-# Assumption, the first method in the class is the method that needs the flowchart drawn
+'''
+  Parsing the class item and re-assigning the first node of the node lists
+  Assumption, the first method in the class is the method that needs the flowchart drawn
+'''
 def pre_parse(nodes):
   if nodes[0] == 'Class':
     nodes = nodes[1]
@@ -58,15 +63,16 @@ def pre_parse(nodes):
     return nodes
 
 
-# Shallow parsing for AST
-# Will only parse the code by main constructs
-# In-depth parsing for each constructs should be done using deep_parse(root_node)
+'''
+  Shallow parsing for AST
+  Will only parse the code by main constructs
+  In-depth parsing for each constructs should be done using deep_parse(root_node)
+'''
 def shallow_parse(nodes):
   nodes = pre_parse(nodes)
 
   if nodes is False:
     return
-
   nodes = recursive_shallow_parsing(nodes)
   return nodes
 
@@ -86,12 +92,12 @@ for statement in parsed_ast:
 print()
 # rp_parsed = recursive_shallow_parsing(ast_processed)
 rp_parsed = shallow_parse(ast_processed)
+
 print('')
 print('Drawable stack: ')
 pprint.pprint(drawable_stack)
 
 
-processed_drawables = {}
 drawing_item = 1;
 
 
@@ -120,7 +126,6 @@ def decision_node(node):
   })
   node_type = tf.get_node_type(node)
   if node_type in ['If', 'ElseIf']:
-    elif_items = []
     else_items = []
     elif_container = []
 
@@ -129,43 +134,37 @@ def decision_node(node):
     # Else-if could be not present in the logic
     if tf.get_node_values(node[1], 'elseifs'):
       elif_container = tf.get_node_values(node[1], 'elseifs')
-      elif_items = tf.get_node_values(tf.get_node_values(tf.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block'), 'nodes')
     # Else could be not present in the logic
     if tf.get_node_values(node[1], 'else_'):
       else_items = tf.get_node_values(tf.get_node_values(node[1], 'else_')[1]['node'][1], 'nodes')
 
-    print('EXPRESSION: ')
-    # pprint.pprint(expression)
+    # print('EXPRESSION: ')
     shape_text = tf.get_processed_text_from_node(expression)
     mapped_drawer = tf.identify_translate_to(expression)
     decision_output[1]['condition'] = shape_text
-    print(mapped_drawer)
-    print(shape_text)
+    # print(mapped_drawer)
+    # print(shape_text)
 
-    print()
-    # pprint.pprint(true_items)
+    # print()
     for i in true_items:
-      print('true item: ')
+      # print('true item: ')
       mapped_drawer = tf.identify_translate_to(i)
       shape_text = tf.get_processed_text_from_node(i)
       decision_output[1]['true'].append((mapped_drawer, shape_text))
-      print(mapped_drawer)
-      print(shape_text)
+      # print(mapped_drawer)
+      # print(shape_text)
 
-    print()
-    # pprint.pprint(else_items)
-    # if else_items is not None:
-      # decision_node[1].update({'false': []})
+    # print()
     for i in else_items:
-      print('else item: ')
+      # print('else item: ')
       mapped_drawer = tf.identify_translate_to(i)
       shape_text = tf.get_processed_text_from_node(i)
       decision_output[1]['false'].append((mapped_drawer, shape_text))
-      print(mapped_drawer)
-      print(shape_text)
+      # print(mapped_drawer)
+      # print(shape_text)
 
-    print('ELSE IF CONTAINER')
-    pprint.pprint(elif_container)
+    # print('ELSE IF CONTAINER')
+    # pprint.pprint(elif_container)
     '''
       Recursively calls the same method to generate the else-if block
     '''
@@ -173,6 +172,7 @@ def decision_node(node):
       rd_built = decision_node(el_if)
       decision_output[1]['elseif'].append(rd_built)
 
+  # TODO - WHILE Node evaluation
   elif node_type == 'While':
     print('While Node')
   return decision_output
@@ -184,9 +184,9 @@ def decision_node(node):
 '''
 def process_node(node):
   shape = tf.identify_translate_to(node)
-  print(shape)
+  # print(shape)
   output_text = tf.get_processed_text_from_node(node)
-  print(output_text)
+  # print(output_text)
   return shape, output_text
 
 
@@ -197,21 +197,20 @@ def process_node(node):
 def deep_parse(root_node, node_type='add_process'):
   drawing_item = ()
   if node_type == 'add_io':
-    print("IO")
+    # print("IO")
     shape, output_text = io_node(root_node)
     drawing_item = shape, output_text
-    print(shape, output_text)
+    # print(shape, output_text)
   elif node_type == 'add_process':
-    print("Process")
+    # print("Process")
     shape, output_text = process_node(root_node)
     drawing_item = shape, output_text
-    print(shape, output_text)
+    # print(shape, output_text)
   elif node_type == 'add_decision':
-    print('DECISION')
+    # print('DECISION')
     shape = decision_node(root_node)
     drawing_item = shape
-    
-    pprint.pprint(shape)
+    # pprint.pprint(shape)
     # print(shape, output_text)
   return drawing_item
 
@@ -230,14 +229,6 @@ pprint.pprint(drawing_list)
 
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
-
-
-# For accessing previous/next elements in for loops
-def previous_and_next(some_iterable):
-  prevs, items, nexts = tee(some_iterable, 3)
-  prevs = chain([None], prevs)
-  nexts = chain(islice(nexts, 1, None), [None])
-  return zip(prevs, items, nexts)
 
 
 # Customized Drawing
