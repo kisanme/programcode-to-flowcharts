@@ -112,15 +112,23 @@ def io_node(node):
   The node will be obtained after shallow parsing.
 '''
 def decision_node(node):
+  decision_output = ('add_decision', {
+    'condition': '',
+    'true': [],
+    'false': [],
+    'elseif': [],
+  })
   node_type = tf.get_node_type(node)
-  if node_type == 'If':
+  if node_type in ['If', 'ElseIf']:
     elif_items = []
     else_items = []
+    elif_container = []
 
     expression = tf.get_node_values(node[1], 'expr')
     true_items = tf.get_node_values(tf.get_node_values(node[1], 'node')[1], 'nodes')
     # Else-if could be not present in the logic
     if tf.get_node_values(node[1], 'elseifs'):
+      elif_container = tf.get_node_values(node[1], 'elseifs')
       elif_items = tf.get_node_values(tf.get_node_values(tf.get_node_values(node[1], 'elseifs')[0][1]['node'], 'Block'), 'nodes')
     # Else could be not present in the logic
     if tf.get_node_values(node[1], 'else_'):
@@ -130,6 +138,7 @@ def decision_node(node):
     # pprint.pprint(expression)
     shape_text = tf.get_processed_text_from_node(expression)
     mapped_drawer = tf.identify_translate_to(expression)
+    decision_output[1]['condition'] = shape_text
     print(mapped_drawer)
     print(shape_text)
 
@@ -139,29 +148,34 @@ def decision_node(node):
       print('true item: ')
       mapped_drawer = tf.identify_translate_to(i)
       shape_text = tf.get_processed_text_from_node(i)
+      decision_output[1]['true'].append((mapped_drawer, shape_text))
       print(mapped_drawer)
       print(shape_text)
 
     print()
     # pprint.pprint(else_items)
+    # if else_items is not None:
+      # decision_node[1].update({'false': []})
     for i in else_items:
       print('else item: ')
       mapped_drawer = tf.identify_translate_to(i)
       shape_text = tf.get_processed_text_from_node(i)
+      decision_output[1]['false'].append((mapped_drawer, shape_text))
       print(mapped_drawer)
       print(shape_text)
 
-    print()
-    # pprint.pprint(elif_items)
-    for i in elif_items:
-      print('else if items: ')
-      mapped_drawer = tf.identify_translate_to(i)
-      shape_text = tf.get_processed_text_from_node(i)
-      print(mapped_drawer)
-      print(shape_text)
+    print('ELSE IF CONTAINER')
+    pprint.pprint(elif_container)
+    '''
+      Recursively calls the same method to generate the else-if block
+    '''
+    for el_if in elif_container:
+      rd_built = decision_node(el_if)
+      decision_output[1]['elseif'].append(rd_built)
+
   elif node_type == 'While':
     print('While Node')
-  return (tf.identify_translate_to(node), '')
+  return decision_output
 
 
 '''
@@ -181,28 +195,37 @@ def process_node(node):
   The root_node is obtained after shallow parsing.
 '''
 def deep_parse(root_node, node_type='add_process'):
-  parse_val = ''
+  drawing_item = ()
   if node_type == 'add_io':
     print("IO")
     shape, output_text = io_node(root_node)
+    drawing_item = shape, output_text
     print(shape, output_text)
   elif node_type == 'add_process':
     print("Process")
     shape, output_text = process_node(root_node)
+    drawing_item = shape, output_text
     print(shape, output_text)
   elif node_type == 'add_decision':
     print('DECISION')
-    shape, output_text = decision_node(root_node)
-    print(shape, output_text)
-  return root_node
+    shape = decision_node(root_node)
+    drawing_item = shape
+    
+    pprint.pprint(shape)
+    # print(shape, output_text)
+  return drawing_item
 
 
 # Deep parse the shallow parsed tree
+drawing_list = []
 for node in drawable_stack:
   n_type = node[0]
   print()
   print()
-  deep_parse(node[1], n_type)
+  drawing_list.append(deep_parse(node[1], n_type))
+
+print('FINAL DRAWING:')
+pprint.pprint(drawing_list)
 
 
 # Test some imperative style coding
