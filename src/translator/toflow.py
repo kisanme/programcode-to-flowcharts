@@ -193,7 +193,8 @@ def get_var_name(var_node):
     if var_node[0] == 'ArrayOffset':
       var_name = get_var_name(get_node_values(var_node[1], 'node'))
       var_name += '['
-      var_name += str(get_node_values(var_node[1], 'expr'))
+      if get_node_values(var_node[1], 'expr') is not None:
+        var_name += str(get_node_values(var_node[1], 'expr'))
       var_name += ']'
     return var_name
   elif isinstance(var_node, dict):
