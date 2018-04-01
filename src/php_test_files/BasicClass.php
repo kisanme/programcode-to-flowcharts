@@ -30,6 +30,7 @@ class BasicClass {
 		else
 		{
 			echo ("HI");
+			$zeus = "Zeus";
 			echo "123";
 		}
 		echo "Afterwards";

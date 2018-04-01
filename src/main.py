@@ -224,6 +224,12 @@ def deep_parse(root_node, node_type='add_process'):
 
 
 def condition_drawing(drawing_shape, res_draw, item, count):
+  el_if_cond_id = 0
+  last_el_if_id = 0
+  last_el_if_ids = []
+  num_el_if_items = 0
+  num_else_items = 0
+
   drawing_shape(item[1]['condition'], count)
   # Connect the condition node to the previous statement
   cond_id = count
@@ -252,14 +258,81 @@ def condition_drawing(drawing_shape, res_draw, item, count):
     f_count = 10000
     # Connect the if condition with an edge to the else block
     res_draw.connect(cond_id, f_count, 'False')
+
     for e_item in item[1]['false']:
-      drawing_shape = getattr(res_draw, e_item[0])
-      drawing_shape(e_item[1], f_count)
-      if f_count > 10000:
-        res_draw.connect(f_count-1, f_count)
+
+      # ELSE-IF statement
+      if e_item[0] == 'add_decision':
+        print('ADD DECISION is here, theres nothing to fear')
+        pprint.pprint(e_item)
+        # Checking whether have their been any other else-if block prior
+        # If so, then the next else-if block
+        if el_if_cond_id > 0:
+          res_draw.connect(el_if_cond_id, f_count, 'False')
+        # Drawing else-if condional diamond
+        el_if_cond_id = f_count
+        print('ELIF condition id', el_if_cond_id)
+        drawing_shape = getattr(res_draw, e_item[0])
+        drawing_shape(e_item[1]['condition'] + str(el_if_cond_id), el_if_cond_id)
+
+        # Drawing ELSE-IF conditionally true block
+        if len(e_item[1]['true']) > 0:
+          print('Connection count', f_count+1, el_if_cond_id)
+          # Connect 'true' edge to the 1st node within the block
+          res_draw.connect(el_if_cond_id, f_count+1, 'True'+str(f_count+1))
+          num_el_if_items += 1
+
+          for e_if_item in e_item[1]['true']:
+            f_count += 1
+            drawing_shape = getattr(res_draw, e_if_item[0])
+            drawing_shape(e_if_item[1]+ str(f_count), f_count)
+            print('THANI block', f_count)
+
+            # Connect the nodes within a single else-if block
+            if (el_if_cond_id != f_count-1):
+              res_draw.connect(f_count-1, f_count)
+            
+            # Increment the number of ELSE-IF statements
+            num_el_if_items += 1
+              
+          # List of tail nodes of ELSE-IF block
+          last_el_if_ids.append(f_count)
+        last_el_if_id = f_count
+
+      # Else statements
+      else:
+        num_else_items += 1
+
+        # Drawing the connection between last ELSE-IF condition to the ELSE block
+        if el_if_cond_id > 0 and f_count - last_el_if_id == 1:
+          res_draw.connect(el_if_cond_id, f_count, 'False')
+        
+        print("Num ELIF statements", 10000-1 + num_el_if_items + num_else_items)
+        print("F_COUNT", e_item[1], f_count, max(*last_el_if_ids))
+        
+        # Drawing each ELSE statement and the corresponding connection
+        drawing_shape = getattr(res_draw, e_item[0])
+        drawing_shape(e_item[1], f_count)
+
+        # Condition for min bound:  and f_count <= (10000-1 + num_el_if_items + num_else_items)
+        # Draw connections within the ELSE statements
+        if f_count > el_if_cond_id and f_count > max(*last_el_if_ids)+1:
+          res_draw.connect(f_count-1, f_count)
+
+      if (el_if_cond_id > 0 and not f_count == el_if_cond_id): 
+        print('collateral')
+      # elif f_count > 10000:
+        # res_draw.connect(f_count-1, f_count)
+
       f_count += 1
+
+    '''
     # The last node of else block connects to the rest of 
     #   the statement outside the else block
+    '''
+    # Connect every ending node of ELSE-IF block to the rest of outer sphere
+    [res_draw.connect(lif_node_id, count+1) for lif_node_id in last_el_if_ids]
+
     res_draw.connect(f_count-1, count+1)
 
 
