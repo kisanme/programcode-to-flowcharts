@@ -154,6 +154,13 @@ def decision_node(node):
       # print(mapped_drawer)
       # print(shape_text)
 
+    '''
+      Recursively calls the same method to generate the else-if block
+    '''
+    for el_if in elif_container:
+      rd_built = decision_node(el_if)
+      decision_output[1]['false'].append(rd_built)
+
     # print()
     for i in else_items:
       # print('else item: ')
@@ -165,12 +172,13 @@ def decision_node(node):
 
     # print('ELSE IF CONTAINER')
     # pprint.pprint(elif_container)
+
     '''
       Recursively calls the same method to generate the else-if block
-    '''
     for el_if in elif_container:
       rd_built = decision_node(el_if)
       decision_output[1]['elseif'].append(rd_built)
+    '''
 
   # TODO - WHILE Node evaluation
   elif node_type == 'While':
