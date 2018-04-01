@@ -217,8 +217,8 @@ def deep_parse(root_node, node_type='add_process'):
 
 def condition_drawing(drawing_shape, res_draw, item, count):
   drawing_shape(item[1]['condition'], count)
-  cond_id = count
   # Connect the condition node to the previous statement
+  cond_id = count
   res_draw.connect(count-1, cond_id)
 
   # True block
@@ -259,12 +259,14 @@ def draw_results(draw_list):
   count = 1
   res_draw = fld.Drawer(None)
   res_draw.initialize_drawing()
+  cond_id = count
   for item in draw_list:
     print('Drawing list')
     drawing_shape = getattr(res_draw, item[0])
     if isinstance(item[1], str):
       drawing_shape(item[1], count)
-      res_draw.connect(count-1, count)
+      if (count-1 != cond_id):
+        res_draw.connect(count-1, count)
       print(count, item)
     
     '''
@@ -272,7 +274,8 @@ def draw_results(draw_list):
       Like If-else-elseif and While
     '''
     if isinstance(item[1], dict):
-      condition_drawing(drawing_shape, res_draw, item, count)
+      cond_id = count
+      condition_drawing(drawing_shape, res_draw, item, cond_id)
 
       
       print('Complex block')
