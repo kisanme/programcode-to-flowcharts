@@ -19,7 +19,7 @@ class Drawer(object):
   def initialize_drawing(self):
     self.gr = pygraphviz.AGraph(directed=True, rankdir='TB', )
     self.gr.node_attr['shape'] = 'rectangle'
-    self.gr.add_node('Start', shape='ellipse')
+    self.gr.add_node(0, label='Start', shape='ellipse')
 
   def add_process(self, process_name, nid):
     self.gr.add_node(nid, label=process_name, shape='rectangle')

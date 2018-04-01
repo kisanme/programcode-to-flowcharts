@@ -28,8 +28,9 @@ class BasicClass {
 			$x = 3;
 		}
 		else
-        {
+		{
 			echo ("HI");
+			echo "123";
 		}
 		echo "Afterwards";
 		$hi = new Carbon('29-10-2018');

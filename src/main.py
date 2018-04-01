@@ -4,7 +4,7 @@ import translator.toflow as tf
 from itertools import tee, islice, chain
 import pprint
 import classifier.classifier as classifier
-import drawer.drawer as fl_drawer
+import drawer.drawer as fld
 
 drawable_stack = []
 drawing_node = 0
@@ -215,6 +215,76 @@ def deep_parse(root_node, node_type='add_process'):
   return drawing_item
 
 
+def condition_drawing(drawing_shape, res_draw, item, count):
+  drawing_shape(item[1]['condition'], count)
+  cond_id = count
+  # Connect the condition node to the previous statement
+  res_draw.connect(count-1, cond_id)
+
+  # True block
+  if len(item[1]['true']) > 0:
+    # Maintaining a new counter for true statements
+    t_count = 1110
+    # Connect the if condition with an edge to the true block
+    res_draw.connect(cond_id, t_count, 'True')
+    for t_item in item[1]['true']:
+      drawing_shape = getattr(res_draw, t_item[0])
+      drawing_shape(t_item[1], t_count)
+      # if item[1]['true']
+      if t_count > 1110:
+        res_draw.connect(t_count-1, t_count)
+      t_count += 1
+    # The last node of else block connects to the rest of 
+    #   the statement outside the else block
+    res_draw.connect(t_count-1, count+1)
+
+  # Else block
+  if len(item[1]['false']) > 0:
+    # Maintaining a new counter for else statements
+    f_count = 10000
+    # Connect the if condition with an edge to the else block
+    res_draw.connect(cond_id, f_count, 'False')
+    for e_item in item[1]['false']:
+      drawing_shape = getattr(res_draw, e_item[0])
+      drawing_shape(e_item[1], f_count)
+      if f_count > 10000:
+        res_draw.connect(f_count-1, f_count)
+      f_count += 1
+    # The last node of else block connects to the rest of 
+    #   the statement outside the else block
+    res_draw.connect(f_count-1, count+1)
+
+
+def draw_results(draw_list):
+  count = 1
+  res_draw = fld.Drawer(None)
+  res_draw.initialize_drawing()
+  for item in draw_list:
+    print('Drawing list')
+    drawing_shape = getattr(res_draw, item[0])
+    if isinstance(item[1], str):
+      drawing_shape(item[1], count)
+      res_draw.connect(count-1, count)
+      print(count, item)
+    
+    '''
+      Blocked statement - Complex statements
+      Like If-else-elseif and While
+    '''
+    if isinstance(item[1], dict):
+      condition_drawing(drawing_shape, res_draw, item, count)
+
+      
+      print('Complex block')
+    count += 1
+  res_draw.end(count-1)
+  res_draw.get_drawing().write('../outputs/final_drawing.dot')
+  res_draw.get_drawing().draw('../outputs/final_drawing.png', prog='dot')
+
+    # res_draw.add_process('$counter = 0;')
+
+
+
 # Deep parse the shallow parsed tree
 drawing_list = []
 for node in drawable_stack:
@@ -225,7 +295,7 @@ for node in drawable_stack:
 
 print('FINAL DRAWING:')
 pprint.pprint(drawing_list)
-
+draw_results(drawing_list)
 
 # Test some imperative style coding
 # yacc_parse.run_parser(parser, open('./php_test_files/Imperative.php', 'r'), False, False)
@@ -236,7 +306,7 @@ pprint.pprint(drawing_list)
 
 '''
 chart = None
-x = fl_drawer.Drawer(chart)
+x = fld.Drawer(chart)
 for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
   if drawing_entity[0] is False:
     continue
@@ -282,7 +352,7 @@ for previous, drawing_entity, nxt in previous_and_next(drawable_stack):
 # x.get_drawing().draw('../outputs/x.png', prog='circo')
 #
 # # While loop drawing
-# while_drawer = fl_drawer.Drawer(None)
+# while_drawer = fld.Drawer(None)
 # while_drawer.connect('Start', '$counter = 0;')
 # while_drawer.add_process('$counter = 0;')
 # while_drawer.connect('$counter = 0;', '$counter < 100')
