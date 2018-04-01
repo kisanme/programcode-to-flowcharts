@@ -263,29 +263,31 @@ def condition_drawing(drawing_shape, res_draw, item, count):
 
       # ELSE-IF statement
       if e_item[0] == 'add_decision':
-        print('ADD DECISION is here, theres nothing to fear')
-        pprint.pprint(e_item)
+
         # Checking whether have their been any other else-if block prior
         # If so, then the next else-if block
         if el_if_cond_id > 0:
           res_draw.connect(el_if_cond_id, f_count, 'False')
+
         # Drawing else-if condional diamond
         el_if_cond_id = f_count
+
         print('ELIF condition id', el_if_cond_id)
         drawing_shape = getattr(res_draw, e_item[0])
-        drawing_shape(e_item[1]['condition'] + str(el_if_cond_id), el_if_cond_id)
+        drawing_shape(e_item[1]['condition'], el_if_cond_id)
 
         # Drawing ELSE-IF conditionally true block
         if len(e_item[1]['true']) > 0:
+
           print('Connection count', f_count+1, el_if_cond_id)
           # Connect 'true' edge to the 1st node within the block
-          res_draw.connect(el_if_cond_id, f_count+1, 'True'+str(f_count+1))
+          res_draw.connect(el_if_cond_id, f_count+1, 'True')
           num_el_if_items += 1
 
           for e_if_item in e_item[1]['true']:
             f_count += 1
             drawing_shape = getattr(res_draw, e_if_item[0])
-            drawing_shape(e_if_item[1]+ str(f_count), f_count)
+            drawing_shape(e_if_item[1], f_count)
             print('THANI block', f_count)
 
             # Connect the nodes within a single else-if block
@@ -307,9 +309,6 @@ def condition_drawing(drawing_shape, res_draw, item, count):
         if el_if_cond_id > 0 and f_count - last_el_if_id == 1:
           res_draw.connect(el_if_cond_id, f_count, 'False')
         
-        print("Num ELIF statements", 10000-1 + num_el_if_items + num_else_items)
-        print("F_COUNT", e_item[1], f_count, max(*last_el_if_ids))
-        
         # Drawing each ELSE statement and the corresponding connection
         drawing_shape = getattr(res_draw, e_item[0])
         drawing_shape(e_item[1], f_count)
@@ -318,11 +317,6 @@ def condition_drawing(drawing_shape, res_draw, item, count):
         # Draw connections within the ELSE statements
         if f_count > el_if_cond_id and f_count > max(*last_el_if_ids)+1:
           res_draw.connect(f_count-1, f_count)
-
-      if (el_if_cond_id > 0 and not f_count == el_if_cond_id): 
-        print('collateral')
-      # elif f_count > 10000:
-        # res_draw.connect(f_count-1, f_count)
 
       f_count += 1
 
