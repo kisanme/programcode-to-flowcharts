@@ -147,28 +147,49 @@ def decision_node(node):
 
     # print()
     for i in true_items:
-      # print('true item: ')
-      mapped_drawer = tf.identify_translate_to(i)
-      shape_text = tf.get_processed_text_from_node(i)
-      decision_output[1]['true'].append((mapped_drawer, shape_text))
-      # print(mapped_drawer)
-      # print(shape_text)
+      '''
+        Recursively calls the same method to generate the if within if block
+      '''
+      if i[0] == 'If':
+        rd_if = decision_node(i)
+        decision_output[1]['true'].append(rd_if)
+      else:
+        # print('true item: ')
+        mapped_drawer = tf.identify_translate_to(i)
+        shape_text = tf.get_processed_text_from_node(i)
+        decision_output[1]['true'].append((mapped_drawer, shape_text))
+        # print(mapped_drawer)
+        # print(shape_text)
 
     '''
       Recursively calls the same method to generate the else-if block
     '''
     for el_if in elif_container:
-      rd_built = decision_node(el_if)
-      decision_output[1]['false'].append(rd_built)
+      '''
+        Recursively calls the same method to generate the if within if block
+      '''
+      if el_if[0] == 'If':
+        rd_if = decision_node(i)
+        decision_output[1]['true'].append(rd_if)
+      else:
+        rd_built = decision_node(el_if)
+        decision_output[1]['false'].append(rd_built)
 
     # print()
     for i in else_items:
-      # print('else item: ')
-      mapped_drawer = tf.identify_translate_to(i)
-      shape_text = tf.get_processed_text_from_node(i)
-      decision_output[1]['false'].append((mapped_drawer, shape_text))
-      # print(mapped_drawer)
-      # print(shape_text)
+      '''
+        Recursively calls the same method to generate the if within if block
+      '''
+      if i[0] == 'If':
+        rd_if = decision_node(i)
+        decision_output[1]['true'].append(rd_if)
+      else:
+        # print('else item: ')
+        mapped_drawer = tf.identify_translate_to(i)
+        shape_text = tf.get_processed_text_from_node(i)
+        decision_output[1]['false'].append((mapped_drawer, shape_text))
+        # print(mapped_drawer)
+        # print(shape_text)
 
     # print('ELSE IF CONTAINER')
     # pprint.pprint(elif_container)

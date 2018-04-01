@@ -9,9 +9,6 @@ class BasicClass {
 		echo('hello world is a nice text');
 		if (1 == 2 && $x <= 2 && 3 >= 3 || 4 == 4 && $x == 2 || empty($x)) {
 		    $x = 2;
-//		    if ($x == 2) {
-//		        echo ("HINDRANCE");
-//		    }
 			echo ("printing hello");
 			echo ("jinthu");
 			nestedIfEvaluation(1, "Hell", $xx);
@@ -30,6 +27,9 @@ class BasicClass {
 		else
 		{
 			echo ("HI");
+			// if ($x == 2) {
+			// 		echo ("HINDRANCE");
+			// }
 			$zeus = "Zeus";
 			echo "123";
 		}
