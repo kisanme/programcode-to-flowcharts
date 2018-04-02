@@ -2,45 +2,46 @@
 
 class BasicClass {
 
-	public function helloConditional() {
-//		if (1 == 2) {
-        // // Both the following may look same, but they are different - the left-associativity
-//		if (1 == 2 && (2 == 2 || 3 == 3)) {
-		echo('hello world is a nice text');
-		if (1 == 2 && $x <= 2 && 3 >= 3 || 4 == 4 && $x == 2 || empty($x)) {
-		    $x = 2;
-//		    if ($x == 2) {
-//		        echo ("HINDRANCE");
-//		    }
-			echo ("printing hello");
-			echo ("jinthu");
-			nestedIfEvaluation(1, "Hell", $xx);
-		}
-		elseif (3==2)
-		{
-			echo ("Brrrr");
-		}
-		elseif (2==2)
-		{
-			echo ("Hello");
-			$x[0] = 3;
-			$x[] = 3;
-			$x = 3;
-		}
-		else
-		{
-			echo ("HI");
-			echo "123";
-		}
-		echo "Afterwards";
-		$hi = new Carbon('29-10-2018');
-		// $abc = isset($hi);
-		$abc = nestedIfEvaluation($hi);
-		$hello = $hi->date(1,2,3);
-		$hi->is_object(1,2,4,5);
-		hello(1,2,3);
-		Carbon::helloworld(1,3,4);
-	}
+// 	public function helloConditional() {
+// //		if (1 == 2) {
+//         // // Both the following may look same, but they are different - the left-associativity
+// //		if (1 == 2 && (2 == 2 || 3 == 3)) {
+// 		echo('hello world is a nice text');
+// 		if (1 == 2 && $x <= 2 && 3 >= 3 || 4 == 4 && $x == 2 || empty($x)) {
+// 		    $x = 2;
+// 			echo ("printing hello");
+// 			echo ("jinthu");
+// 			nestedIfEvaluation(1, "Hell", $xx);
+// 		}
+// 		elseif (3==2)
+// 		{
+// 			echo ("Brrrr");
+// 		}
+// 		elseif (2==2)
+// 		{
+// 			echo ("Hello");
+// 			$x[0] = 3;
+// 			$x[] = 3;
+// 			$x = 3;
+// 		}
+// 		else
+// 		{
+// 			echo ("HI");
+// 			// if ($x == 2) {
+// 			// 		echo ("HINDRANCE");
+// 			// }
+// 			$zeus = "Zeus";
+// 			echo "123";
+// 		}
+// 		echo "Afterwards";
+// 		$hi = new Carbon('29-10-2018');
+// 		// $abc = isset($hi);
+// 		$abc = nestedIfEvaluation($hi);
+// 		$hello = $hi->date(1,2,3);
+// 		$hi->is_object(1,2,4,5);
+// 		hello(1,2,3);
+// 		Carbon::helloworld(1,3,4);
+// 	}
 
 //	public function nestedIfEvaluation() {
 //	    $x = 2;
@@ -56,13 +57,15 @@ class BasicClass {
 //	}
 
 
-//    public function whileEvaluation() {
-//      $counter = 0;
-//      while ($counter < 100) {
-//        $some_array[] = $counter;
-//        $counter ++;
-//      }
-//    }
+   public function whileEvaluation() {
+     $counter = 0;
+     while ($counter < 100) {
+			 $some_array[] = $counter;
+			 $hello = $x;
+       $counter++;
+       ++$counter;
+     }
+   }
 
 //	public function switch_test () {
 //	    switch (contenttype) {

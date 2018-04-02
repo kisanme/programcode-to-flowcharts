@@ -164,7 +164,9 @@ def is_process(node_type):
     'Throw',
     'FunctionCall',
     'MethodCall',
-    'StaticMethodCall'
+    'StaticMethodCall',
+    'PostIncDecOp',
+    'PreIncDecOp'
   ]
 
   if get_node_type(node_type) in processes:
@@ -235,6 +237,7 @@ def get_function_call(var_node):
 # e.g: $hi = $hello->world();
 def get_var_expression(var_node):
   if isinstance(var_node, tuple):
+    print('variable expression node', var_node)
     exp = var_node[1].get('expr', None)
 
     '''
@@ -257,6 +260,14 @@ def get_var_expression(var_node):
     '''
     if isinstance(exp, tuple) and exp[0] == 'FunctionCall':
       exp = get_function_call(exp)
+
+
+    ''' 
+      Get the variable name of the RHS
+      e.g: $hi = $x;
+    '''
+    if var_node[0] == 'Variable':
+      exp = get_node_values(var_node, 'name')
 
     '''
       Recursive call is necessary to identify items on the RHS like a Method Call
@@ -415,5 +426,11 @@ def get_processed_text_from_node(node):
       output_text += ')'
     elif node[0] == 'BinaryOp':
       output_text = 'if ( ' + str(recursive_binaryop_parse(node, '')) + ' )'
+    elif node[0] == 'PreIncDecOp':
+      operator = get_node_values(node[1], 'op')
+      output_text = str(operator) + get_var_expression(node)
+    elif node[0] == 'PostIncDecOp':
+      operator = get_node_values(node[1], 'op')
+      output_text =  get_var_expression(node) + str(operator)
   return output_text
 
