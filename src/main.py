@@ -123,9 +123,10 @@ def decision_node(node):
     'true': [],
     'false': [],
     'elseif': [],
+    'while_last': []
   })
   node_type = tf.get_node_type(node)
-  if node_type in ['If', 'ElseIf']:
+  if node_type in ['If', 'ElseIf', 'While']:
     else_items = []
     elif_container = []
 
@@ -201,9 +202,13 @@ def decision_node(node):
       decision_output[1]['elseif'].append(rd_built)
     '''
 
-  # TODO - WHILE Node evaluation
-  elif node_type == 'While':
-    print('While Node')
+    '''
+      WHILE Node evaluation
+      Add the pointer to the last_node to the WHILE condition
+    '''
+    if node_type == 'While':
+      decision_output[1]['while_last'].append((mapped_drawer, shape_text))
+      
   return decision_output
 
 
@@ -263,6 +268,9 @@ def condition_drawing(drawing_shape, res_draw, item, count):
     # Connect the if condition with an edge to the true block
     res_draw.connect(cond_id, t_count, 'True')
     for t_item in item[1]['true']:
+      if (not isinstance(t_item[0], str)):
+        continue
+      print('T', t_item)
       drawing_shape = getattr(res_draw, t_item[0])
       drawing_shape(t_item[1], t_count)
       # if item[1]['true']
