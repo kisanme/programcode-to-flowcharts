@@ -255,6 +255,7 @@ def condition_drawing(drawing_shape, res_draw, item, count):
   last_el_if_ids = []
   num_el_if_items = 0
   num_else_items = 0
+  while_last_item_id = 0
 
   drawing_shape(item[1]['condition'], count)
   # Connect the condition node to the previous statement
@@ -276,7 +277,20 @@ def condition_drawing(drawing_shape, res_draw, item, count):
       # if item[1]['true']
       if t_count > 1110:
         res_draw.connect(t_count-1, t_count)
+
+      # Last of the while block
+      if (len(item[1]['while_last']) > 0):
+        while_last_item_id = t_count
+      
+      # Increment the true count for the next item of the loop
       t_count += 1
+
+    
+  # Draw the connection from last item of within the while block to the conditional block
+  if (len(item[1]['while_last']) > 0):
+    res_draw.connect(while_last_item_id, cond_id)
+
+
     # The last node of else block connects to the rest of 
     #   the statement outside the else block
     res_draw.connect(t_count-1, count+1)
@@ -365,7 +379,10 @@ def draw_results(draw_list):
   res_draw.initialize_drawing()
   cond_id = count
   for item in draw_list:
-    print('Drawing list')
+    '''
+      Drawing simple shapes like single line statements
+      $x = 'hello world';
+    '''
     drawing_shape = getattr(res_draw, item[0])
     if isinstance(item[1], str):
       drawing_shape(item[1], count)
