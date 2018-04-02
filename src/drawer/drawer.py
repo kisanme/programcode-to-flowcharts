@@ -12,7 +12,8 @@ import pygraphviz
 
 class Drawer(object):
 
-  def __init__(self, gr):
+  def __init__(self, gr, debug=False):
+    self.debug = debug
     self.gr = gr  # type: pygraphviz.AGraph
     self.initialize_drawing()
 
@@ -22,12 +23,15 @@ class Drawer(object):
     self.gr.add_node(0, label='Start', shape='ellipse')
 
   def add_process(self, process_name, nid):
+    process_name = (process_name + ' : ' + str(nid)) if self.debug == True else process_name
     self.gr.add_node(nid, label=process_name, shape='rectangle')
 
   def add_io(self, io_name, nid):
+    io_name = (io_name + ' : ' + str(nid)) if self.debug == True else io_name
     self.gr.add_node(nid, label=io_name, shape='parallelogram')
 
   def add_decision(self, decision_name, nid):
+    decision_name = (decision_name + ' : ' + str(nid)) if self.debug == True else decision_name
     self.gr.add_node(nid, label=decision_name, shape='diamond')
 
   def connect(self, from_node, to_node, connect_name=''):
