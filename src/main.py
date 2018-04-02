@@ -256,6 +256,8 @@ def condition_drawing(drawing_shape, res_draw, item, count):
   num_el_if_items = 0
   num_else_items = 0
   while_last_item_id = 0
+  t_count = 0
+  f_count = 0
 
   drawing_shape(item[1]['condition'], count)
   # Connect the condition node to the previous statement
@@ -289,11 +291,6 @@ def condition_drawing(drawing_shape, res_draw, item, count):
   # Draw the connection from last item of within the while block to the conditional block
   if (len(item[1]['while_last']) > 0):
     res_draw.connect(while_last_item_id, cond_id)
-
-
-    # The last node of else block connects to the rest of 
-    #   the statement outside the else block
-    res_draw.connect(t_count-1, count+1)
 
   # Else block
   if len(item[1]['false']) > 0:
@@ -371,13 +368,19 @@ def condition_drawing(drawing_shape, res_draw, item, count):
     [res_draw.connect(lif_node_id, count+1) for lif_node_id in last_el_if_ids]
 
     res_draw.connect(f_count-1, count+1)
+    
+    # Returns the latest count for each item
+  return count, t_count, f_count
 
 
 def draw_results(draw_list):
   count = 1
-  res_draw = fld.Drawer(None)
+  res_draw = fld.Drawer(None, debug=True)
   res_draw.initialize_drawing()
   cond_id = count
+  l_count, t_count, f_count = 0, 0, 0
+
+
   for item in draw_list:
     '''
       Drawing simple shapes like single line statements
@@ -388,7 +391,7 @@ def draw_results(draw_list):
       drawing_shape(item[1], count)
       if (count-1 != cond_id):
         res_draw.connect(count-1, count)
-      print(count, item)
+      print('Normal BLOCK:', count, item)
     
     '''
       Blocked statement - Complex statements
@@ -396,10 +399,19 @@ def draw_results(draw_list):
     '''
     if isinstance(item[1], dict):
       cond_id = count
-      condition_drawing(drawing_shape, res_draw, item, cond_id)
+      l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
 
-      
-      print('Complex block')
+      print('Complex BLOCK:', count, item)
+      print('LATEST COUNTS', l_count, t_count, f_count)
+
+    # The last node of if-true block connects to the rest of 
+    #   the statement outside the else block
+    if t_count != 0 and count == l_count+1:
+      res_draw.connect(t_count-1, l_count+1)
+    elif f_count != 0 and count == l_count+1:
+      res_draw.connect(f_count-1, l_count+1)
+
+
     count += 1
   res_draw.end(count-1)
   res_draw.get_drawing().write('../outputs/final_drawing.dot')
