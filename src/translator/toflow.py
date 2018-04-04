@@ -77,17 +77,12 @@ def x_get_node_values(node):
     if isinstance(node_field, list):
       for field in node_field:
         response[field] = node[1][field]
-        # print('response within loop', field, response[field])
         get_node_values(response[field])
-      # print('response', response)
     else:
-      # print('response non instance', node[1][node_field])
       get_node_values(node[1][node_field])
   elif isinstance(node, list):
-    print("dictionary", type(node), node)
     return node
   else:
-    # print('response none', node)
     return node
 
 
@@ -237,7 +232,6 @@ def get_function_call(var_node):
 # e.g: $hi = $hello->world();
 def get_var_expression(var_node):
   if isinstance(var_node, tuple):
-    print('variable expression node', var_node)
     exp = var_node[1].get('expr', None)
 
     '''
