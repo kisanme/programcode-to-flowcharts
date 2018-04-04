@@ -331,7 +331,8 @@ def condition_drawing(drawing_shape, res_draw, item, count):
 
         # Condition for min bound:  and f_count <= (10000-1 + num_el_if_items + num_else_items)
         # Draw connections within the ELSE statements
-        if f_count > el_if_cond_id and f_count > max(*last_el_if_ids)+1:
+        print(last_el_if_ids)
+        if f_count > el_if_cond_id and last_el_if_id and f_count > max(*last_el_if_ids)+1:
           res_draw.connect(f_count-1, f_count)
 
       f_count += 1

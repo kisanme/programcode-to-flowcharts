@@ -279,7 +279,7 @@ def get_var_expression(var_node):
 
 def get_echo_text(echo_node):
   if isinstance(echo_node, list):
-    return ' '.join(echo_node)
+    return ' '.join(str(echo_node))
 
 
 def get_function_name(function_call):
