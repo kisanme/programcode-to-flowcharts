@@ -1,6 +1,5 @@
 <?php
-
-trait HelloWorld {
+class HelloWorld {
     public function hello() {
         echo('hello world');
     }
