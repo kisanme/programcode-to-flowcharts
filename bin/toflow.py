@@ -12,8 +12,8 @@ python_file_name = sys.argv[0]
 php_file = sys.argv[1]
 output_flowchart = sys.argv[3]
 
-print('php file', php_file)
-print('flowchart file', output_flowchart)
+print('Source php file: ', php_file)
+print('Flowchart file generated: ', output_flowchart)
 
 # print(os.getcwd())
 sys.path.append(os.path.abspath('.'))

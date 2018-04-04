@@ -84,8 +84,8 @@ def shallow_parse(nodes):
 def io_node(node):
   shape = tf.identify_translate_to(node)
   output_text = tf.get_processed_text_from_node(node)
-  print(shape)
-  print(output_text)
+  # print(shape)
+  # print(output_text)
   return shape, output_text 
 
 
@@ -249,7 +249,7 @@ def condition_drawing(drawing_shape, res_draw, item, count):
     for t_item in item[1]['true']:
       if (not isinstance(t_item[0], str)):
         continue
-      print('T', t_item)
+      # print('T', t_item)
       drawing_shape = getattr(res_draw, t_item[0])
       drawing_shape(t_item[1], t_count)
       # if item[1]['true']
@@ -288,14 +288,14 @@ def condition_drawing(drawing_shape, res_draw, item, count):
         # Drawing else-if condional diamond
         el_if_cond_id = f_count
 
-        print('ELIF condition id', el_if_cond_id)
+        # print('ELIF condition id', el_if_cond_id)
         drawing_shape = getattr(res_draw, e_item[0])
         drawing_shape(e_item[1]['condition'], el_if_cond_id)
 
         # Drawing ELSE-IF conditionally true block
         if len(e_item[1]['true']) > 0:
 
-          print('Connection count', f_count+1, el_if_cond_id)
+          # print('Connection count', f_count+1, el_if_cond_id)
           # Connect 'true' edge to the 1st node within the block
           res_draw.connect(el_if_cond_id, f_count+1, 'True')
           num_el_if_items += 1
@@ -304,7 +304,7 @@ def condition_drawing(drawing_shape, res_draw, item, count):
             f_count += 1
             drawing_shape = getattr(res_draw, e_if_item[0])
             drawing_shape(e_if_item[1], f_count)
-            print('THANI block', f_count)
+            # print('THANI block', f_count)
 
             # Connect the nodes within a single else-if block
             if (el_if_cond_id != f_count-1):
@@ -367,7 +367,7 @@ def draw_results(draw_list, output_path):
       drawing_shape(item[1], count)
       if (count-1 != cond_id):
         res_draw.connect(count-1, count)
-      print('Normal BLOCK:', count, item)
+      # print('Normal BLOCK:', count, item)
     
     '''
       Blocked statement - Complex statements
@@ -377,8 +377,8 @@ def draw_results(draw_list, output_path):
       cond_id = count
       l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
 
-      print('Complex BLOCK:', count, item)
-      print('LATEST COUNTS', l_count, t_count, f_count)
+      # print('Complex BLOCK:', count, item)
+      # print('LATEST COUNTS', l_count, t_count, f_count)
 
     # The last node of if-true block connects to the rest of 
     #   the statement outside the else block
@@ -402,31 +402,33 @@ def code_to_flow(php_file_path, output_path):
   # lexemes = parse_through_lex('./php_test_files/BasicClass.php')
   parser = yacc_parse.make_parser()
   parsed_ast = yacc_parse.run_parser(parser, open(php_file_path, 'r'), True, False)
-  pprint.pprint(parsed_ast)
+  # pprint.pprint(parsed_ast)
 
+  # Removes empty elements
   ast_processed = []
   for statement in parsed_ast:
     if hasattr(statement, 'generic'):
       statement = statement.generic()
       ast_processed = statement
 
-  # pprint.pprint(ast_processed)
+  print('AST:')
+  pprint.pprint(ast_processed)
   print()
-  # rp_parsed = recursive_shallow_parsing(ast_processed)
+  # This populates drawable_stack list
   rp_parsed = shallow_parse(ast_processed)
 
-  print('')
-  print('Drawable stack: ')
-  pprint.pprint(drawable_stack)
+  print()
+  # print('Drawable stack: ')
+  # pprint.pprint(drawable_stack)
 
   # Deep parse the shallow parsed tree
   drawing_list = []
   for node in drawable_stack:
     n_type = node[0]
-    print()
-    print()
+    # print()
+    # print()
     drawing_list.append(deep_parse(node[1], n_type))
 
-  print('FINAL DRAWING:')
-  pprint.pprint(drawing_list)
+  # print('FINAL DRAWING:')
+  # pprint.pprint(drawing_list)
   draw_results(drawing_list, output_path)
