@@ -1,5 +1,7 @@
 FROM python:3
 
+RUN apt-get update && apt-get install -y graphviz
+RUN echo "alias ll='ls -alh'" >> ~/.bashrc
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./
