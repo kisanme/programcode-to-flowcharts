@@ -391,7 +391,10 @@ def draw_results(draw_list, output_path):
         drawing_shape(item[1], count)
         if (count-1 != cond_id):
           res_draw.connect(count-1, count)
-        # print('Normal BLOCK:', count, item)
+        if cond_id == 1:
+          ''' There is no condition in the resultant drawing '''
+          res_draw.connect(count-1, count)
+
       
       '''
         Blocked statement - Complex statements
