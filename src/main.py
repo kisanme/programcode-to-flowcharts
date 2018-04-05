@@ -40,15 +40,30 @@ def recursive_shallow_parsing(nodes):
           # drawable_stack.append((tf.get_node_typ(node), recursive_shallow_parsing(tf.get_nodes(node))))
         else:
           processed_node = recursive_shallow_parsing(tf.get_nodes(node))
-          if processed_node is not None:
-            # This is buggy: It only checks the very first node item, say the first statement of the block
+
+          if (processed_node is not None) and isinstance(processed_node, tuple):
+            ''' 
+              This is buggy: It only checks the very first node item, say the first statement of the block
+            '''
             drawable = tf.identify_translate_to(processed_node[0]), processed_node
-            # drawable_stack.append(drawable)
-            # if drawable[0] is not False:
+            # print('DRAWABLE')
+            # pprint.pprint(drawable[0])
+
+            # print('DRAWABLE-0:', drawable[0])
+            # if isinstance(drawable[0], str) and (drawable[0] != False) and (drawable[0] in ['add_io', 'add_process', 'add_decision']):
             #   drawable_stack.append(drawable)
             # print('drawable (from list):', drawable_stack)
           # #print('processed_node list:', processed_node)
           # drawable_stack.append((tf.get_node_type(node), recursive_shallow_parsing(tf.get_nodes(node))))
+          elif (processed_node is not None) and isinstance(processed_node, list) and len(processed_node) == 1:
+            ''' 
+              When there is only a single node within the method block
+            '''
+            processed_node = recursive_shallow_parsing(processed_node[0])
+            drawable = tf.identify_translate_to(processed_node), processed_node
+            if isinstance(drawable[0], str) and (drawable[0] != False) and (drawable[0] in ['add_io', 'add_process', 'add_decision']):
+              drawable_stack.append(drawable)
+
   return nodes
 
 
@@ -84,8 +99,8 @@ def shallow_parse(nodes):
 def io_node(node):
   shape = tf.identify_translate_to(node)
   output_text = tf.get_processed_text_from_node(node)
-  # print(shape)
-  # print(output_text)
+  # print('SHAPE', shape)
+  # print('OUTPUT TEXT', output_text)
   return shape, output_text 
 
 
@@ -363,23 +378,31 @@ def draw_results(draw_list, output_path):
       Drawing simple shapes like single line statements
       $x = 'hello world';
     '''
-    drawing_shape = getattr(res_draw, item[0])
-    if isinstance(item[1], str):
-      drawing_shape(item[1], count)
-      if (count-1 != cond_id):
-        res_draw.connect(count-1, count)
-      # print('Normal BLOCK:', count, item)
-    
-    '''
-      Blocked statement - Complex statements
-      Like If-else-elseif and While
-    '''
-    if isinstance(item[1], dict):
-      cond_id = count
-      l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
+    # print("DRAW_RESULTS method")
+    # pprint.pprint(item)
 
-      # print('Complex BLOCK:', count, item)
-      # print('LATEST COUNTS', l_count, t_count, f_count)
+    '''
+      Adding the conditional check to use only tuples
+      with the first element as a string
+    '''
+    if isinstance(item, tuple) and isinstance(item[0], str):
+      drawing_shape = getattr(res_draw, item[0])
+      if isinstance(item[1], str):
+        drawing_shape(item[1], count)
+        if (count-1 != cond_id):
+          res_draw.connect(count-1, count)
+        # print('Normal BLOCK:', count, item)
+      
+      '''
+        Blocked statement - Complex statements
+        Like If-else-elseif and While
+      '''
+      if isinstance(item[1], dict):
+        cond_id = count
+        l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
+
+        # print('Complex BLOCK:', count, item)
+        # print('LATEST COUNTS', l_count, t_count, f_count)
 
     # The last node of if-true block connects to the rest of 
     #   the statement outside the else block
@@ -419,15 +442,15 @@ def code_to_flow(php_file_path, output_path):
   rp_parsed = shallow_parse(ast_processed)
 
   print()
-  # print('Drawable stack: ')
-  # pprint.pprint(drawable_stack)
+  print('Drawable stack: ')
+  pprint.pprint(drawable_stack)
 
   # Deep parse the shallow parsed tree
   drawing_list = []
   for node in drawable_stack:
     n_type = node[0]
-    # print()
-    # print()
+    # print('shallow_node')
+    # print(node)
     drawing_list.append(deep_parse(node[1], n_type))
 
   # print('FINAL DRAWING:')
