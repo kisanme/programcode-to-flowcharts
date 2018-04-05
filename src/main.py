@@ -359,7 +359,9 @@ def condition_drawing(drawing_shape, res_draw, item, count):
     # Connect every ending node of ELSE-IF block to the rest of outer sphere
     [res_draw.connect(lif_node_id, count+1) for lif_node_id in last_el_if_ids]
 
-    res_draw.connect(f_count-1, count+1)
+    # BUG
+    # When there is no element outside the if-else block, this creates a new element
+    # res_draw.connect(f_count-1, count+1)
     
     # Returns the latest count for each item
   return count, t_count, f_count
@@ -407,6 +409,13 @@ def draw_results(draw_list, output_path):
         # print('Complex BLOCK:', count, item)
         # print('LATEST COUNTS', l_count, t_count, f_count)
 
+      '''
+        When the false block of if-else needs to connect to the outer block
+      '''
+      if l_count+1 == count and f_count > 0:
+        # print('LATEST COUNTS', l_count, t_count, f_count, count)
+        res_draw.connect(f_count-1, count)
+
     # The last node of if-true block connects to the rest of 
     #   the statement outside the else block
     if t_count != 0 and count == l_count+1:
@@ -416,7 +425,26 @@ def draw_results(draw_list, output_path):
 
 
     count += 1
-  res_draw.end(count-1)
+  
+
+  '''
+    END NODE
+  '''
+  all_nodes_in_reverse = [x for x in res_draw.get_nodes()[::-1]]
+  if count-1 == int(res_draw.get_nodes()[-1]):
+    '''
+      If the last item is less then 1 from the current count, which is 1+ the original last node
+    '''
+    res_draw.end(count-1)
+  else:
+    '''
+      Adds all those elements before the last shallow node into the END node
+    '''
+    for node in all_nodes_in_reverse:
+      node = int(node)
+      if node == count-1:
+        break
+      res_draw.end(node)
   res_draw.get_drawing().write(output_path + '.dot')
   res_draw.get_drawing().draw(output_path + '.png', prog='dot')
 

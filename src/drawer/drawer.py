@@ -41,6 +41,12 @@ class Drawer(object):
     end_name = 'End'
     self.gr.add_node(end_name, shape='ellipse')
     self.connect(from_node, end_name, edge_name)
+  
+  def get_node(self, nid):
+    return self.gr.get_node(nid)
+  
+  def get_nodes(self):
+    return self.gr.nodes()
 
   def get_drawing(self):
     return self.gr
