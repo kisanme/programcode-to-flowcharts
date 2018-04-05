@@ -278,8 +278,32 @@ def get_var_expression(var_node):
 
 
 def get_echo_text(echo_node):
-  if isinstance(echo_node, list):
+  if isinstance(echo_node, list) and not (isinstance(echo_node[0], tuple)):
     return ' '.join(echo_node)
+  elif isinstance(echo_node[0], tuple) and echo_node[0][0] == 'BinaryOp':
+    '''
+      The echo string has a variable in it.
+      This is evaluated as a 'Binary Operator'
+      e.g: echo("Hello $name")
+    '''
+    return_val = ''
+
+    '''
+      Evaluating the left part
+    '''
+    if (isinstance(echo_node[0][1]['left'], str)):
+      return_val += echo_node[0][1]['left']
+    elif (isinstance(echo_node[0][1]['left'], tuple) and echo_node[0][1]['left'][0] == 'Variable'):
+      return_val += get_var_name(echo_node[0][1]['left'])
+
+    '''
+      Evaluating the right part
+    '''
+    if (isinstance(echo_node[0][1]['right'], str)):
+      return_val += echo_node[0][1]['right']
+    elif (isinstance(echo_node[0][1]['right'], tuple) and echo_node[0][1]['right'][0] == 'Variable'):
+      return_val += get_var_name(echo_node[0][1]['right'])
+    return return_val
 
 
 def get_function_name(function_call):

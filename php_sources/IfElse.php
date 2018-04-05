@@ -5,10 +5,10 @@ class IfElse{
   {
     $x = 1;
     if ($x==1) {
-      echo ("$x is greater than 0");
+      $y = 20;
     } else {
-      echo ("$x is is less than 1");
+      $y = 10;
     }
-    
+    echo ("Value of y is: $y");
   }
 }
