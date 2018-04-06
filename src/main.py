@@ -284,6 +284,9 @@ def condition_drawing(drawing_shape, res_draw, item, count):
     t_count = 1110
     # Connect the if condition with an edge to the true block
     res_draw.connect(cond_id, t_count, 'True')
+    '''
+      True side of the condition
+    '''
     for t_item in item[1]['true']:
       if (not isinstance(t_item[0], str)):
         continue
@@ -340,7 +343,9 @@ def condition_drawing(drawing_shape, res_draw, item, count):
         res_draw.connect(t_count-1, t_t_cond_id)
         print('T', t_count)
 
-      # if item[1]['true']
+      '''
+        If there is true elments
+      '''
       if t_count > 1110:
         '''
           If the t_count doesn't exist, it doesn't draw the connection
@@ -352,6 +357,7 @@ def condition_drawing(drawing_shape, res_draw, item, count):
           pass
 
       # Last of the while block
+      # This is to identify the looping statement
       if (len(item[1]['while_last']) > 0):
         while_last_item_id = t_count
       
@@ -467,7 +473,8 @@ def draw_results(draw_list, output_path):
   res_draw.initialize_drawing()
   cond_id = count
   l_count, t_count, f_count = 0, 0, 0
-
+  # This is buggy, but yet works with one single while loop
+  is_while = False
 
   for item in draw_list:
     '''
@@ -499,6 +506,10 @@ def draw_results(draw_list, output_path):
       if isinstance(item[1], dict):
         cond_id = count
         l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
+        '''
+          Makes is_while with the value True if the while_last element is not empty
+        '''
+        is_while = item[1]['while_last'] != []
 
         print('Complex BLOCK:', count, item)
         # print('LATEST COUNTS', l_count, t_count, f_count)
@@ -512,10 +523,20 @@ def draw_results(draw_list, output_path):
 
     # The last node of if-true block connects to the rest of 
     #   the statement outside the else block
-    if t_count != 0 and count == l_count+1:
-      res_draw.connect(t_count-1, l_count+1)
+    # Check if this is not a while loop and the very next element after the while loop
+    #   (not is_while and count == t_count-1)
+    if t_count != 0 and count == l_count+1 and not is_while:
+      if (is_while):
+        print()
+      else:
+        res_draw.connect(t_count-1, l_count+1)
     elif f_count != 0 and count == l_count+1:
       res_draw.connect(f_count-1, l_count+1)
+    elif is_while:
+      try:
+        res_draw.connect(cond_id, l_count+1, 'False')
+      except KeyError:
+        pass
 
 
     count += 1
