@@ -12,7 +12,7 @@ class NestedIfElse{
       }
       $y = 30;
     } else {
-      $z = 10;
+      echo($x . ' is not zero');
       $y = 10;
     }
     echo ("Value of y is: $y");
