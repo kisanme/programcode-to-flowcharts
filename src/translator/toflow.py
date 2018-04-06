@@ -396,7 +396,16 @@ def recursive_binaryop_parse(node, out_text):
     operator = get_node_values(node, 'op')
     r_operand = get_node_values(node, 'right')
     if isinstance(l_operand, tuple):
-      l_operand = get_node_values(l_operand, 'name')
+      '''
+        if the operand itself is complex 
+        ($c % 2) == 0
+      '''
+      if isinstance(l_operand, tuple) and l_operand[0] == 'BinaryOp':
+        l_operand = str(get_node_values(get_node_values(l_operand, 'left'), 'name')) \
+          + str(get_node_values(l_operand, 'op')) \
+          + str(get_node_values(l_operand,'right'))
+      else:
+        l_operand = get_node_values(l_operand, 'name')
     if isinstance(r_operand, tuple):
       r_operand = get_node_values(r_operand, 'name')
     out_text = str(l_operand) + str(operator) + str(r_operand)
