@@ -281,9 +281,7 @@ def condition_drawing(drawing_shape, res_draw, item, count):
   # True block
   if len(item[1]['true']) > 0:
     # Maintaining a new counter for true statements
-    t_count = 1110
-    # Connect the if condition with an edge to the true block
-    res_draw.connect(cond_id, t_count, 'True')
+    initial_t_count = t_count = 1110
     '''
       True side of the condition
     '''
@@ -293,19 +291,19 @@ def condition_drawing(drawing_shape, res_draw, item, count):
       
       # If block within the true block of a parent if (true within true)
       num_t_t_items = 0
+      num_t_f_items = 0
       if(isinstance(t_item[0], str) and t_item[0] == 'add_decision'):
         print('DECISION DRAW')
         pprint.pprint(t_item)
 
         t_t_cond_id = t_count + 1110
         t_t_count = t_t_cond_id
+        t_f_count = t_t_cond_id + 10
 
         drawing_shape = getattr(res_draw, t_item[0])
         drawing_shape(t_item[1]['condition'], t_t_cond_id)
 
         # print('Connection count', f_count+1, el_if_cond_id)
-        # Connect 'true' edge to the 1st node within the block
-        res_draw.connect(t_t_cond_id, t_t_count+1, 'True')
         num_t_t_items += 1
 
         '''
@@ -322,16 +320,43 @@ def condition_drawing(drawing_shape, res_draw, item, count):
           if (t_t_count-1 != t_t_cond_id):
             res_draw.connect(t_t_count-1, t_t_count)
             print()
-
           
           # Increment the number of ELSE-IF statements
           num_t_t_items += 1
+
+        # Connect 'true' edge to the 1st node within the block, which is the next id'd after the conditional statement
+        res_draw.connect(t_t_cond_id, t_t_cond_id+1, 'True')
         
+        '''
+          False items within the second if block
+        '''
+        if t_item[1]['false'] != []:
+          res_draw.connect(t_t_cond_id, t_f_count+1, 'False')
+          # res_draw.connect(t_f_count, t_count+1)
+          # num_t_f_items += 1
+
+        for e_if_item in t_item[1]['false']:
+          t_f_count += 1
+          drawing_shape = getattr(res_draw, e_if_item[0])
+          drawing_shape(e_if_item[1], t_f_count)
+          # print('THANI block', t_t_cond_id)
+
+          # Connect the nodes within a single else-if block
+          print(t_f_count-1, t_t_cond_id)
+          if (t_f_count-10-1 != t_t_cond_id):
+            res_draw.connect(t_f_count-1, t_f_count)
+            print()
+
+          num_t_f_items += 1
+
         # Connect the last node within sub-if to the nodes outside
         res_draw.connect(t_t_count, t_count+1)
 
+
         if(t_item[1]['false'] == []):
           res_draw.connect(t_t_cond_id, t_count+1, 'False')
+        else:
+          res_draw.connect(t_f_count, t_count+1)
 
       else:
         print('T', t_item)
@@ -340,7 +365,22 @@ def condition_drawing(drawing_shape, res_draw, item, count):
 
       if num_t_t_items > 0:
         print(res_draw.get_nodes())
-        res_draw.connect(t_count-1, t_t_cond_id)
+        try:
+          if res_draw.get_node(t_count-1):
+            res_draw.connect(t_count-1, t_t_cond_id)
+        except KeyError:
+          pass
+        # res_draw.connect(t_count-1, t_t_cond_id)
+        print('T', t_count)
+
+      if num_t_f_items > 0:
+        print(res_draw.get_nodes())
+        try:
+          if res_draw.get_node(t_count-1):
+            res_draw.connect(t_count-1, t_t_cond_id)
+        except KeyError:
+          pass
+        # res_draw.connect(t_count-1, t_t_cond_id)
         print('T', t_count)
 
       '''
@@ -364,6 +404,18 @@ def condition_drawing(drawing_shape, res_draw, item, count):
       # Increment the true count for the next item of the loop
       t_count += 1
 
+        # Connect the if condition with an edge to the true block
+    
+    try:
+      if res_draw.get_node(initial_t_count):
+        res_draw.connect(cond_id, initial_t_count, 'True')
+    except KeyError:
+      try:
+        if res_draw.get_node(t_t_cond_id):
+          res_draw.connect(cond_id, t_t_cond_id, 'True')
+      except KeyError:
+        pass
+      pass
     
   # Draw the connection from last item of within the while block to the conditional block
   if (len(item[1]['while_last']) > 0):
@@ -503,13 +555,18 @@ def draw_results(draw_list, output_path):
         Blocked statement - Complex statements
         Like If-else-elseif and While
       '''
+      print('ITEM 1', (item[1]))
+      print('ITEM 1 type', type(item[1]))
       if isinstance(item[1], dict):
-        cond_id = count
-        l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
         '''
           Makes is_while with the value True if the while_last element is not empty
         '''
         is_while = item[1]['while_last'] != []
+
+        print('CONDITIONAL WITHIN', item)
+
+        cond_id = count
+        l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
 
         print('Complex BLOCK:', count, item)
         # print('LATEST COUNTS', l_count, t_count, f_count)
