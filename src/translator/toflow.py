@@ -123,7 +123,6 @@ def is_decision(node):
     # 'Switch',
     'Case',
     'BinaryOp'
-
   ]
 
   if get_node_type(node) in decisions:

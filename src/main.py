@@ -117,12 +117,17 @@ def decision_node(node):
     'while_last': []
   })
   node_type = tf.get_node_type(node)
+  print('NODE TYPE', node_type)
   if node_type in ['If', 'ElseIf', 'While']:
     else_items = []
     elif_container = []
 
     expression = tf.get_node_values(node[1], 'expr')
     true_items = tf.get_node_values(tf.get_node_values(node[1], 'node')[1], 'nodes')
+    # if (true_items[0][0] == 'If'):
+      # print('If within if')
+      # true_items = tf.get_node_values(tf.get_node_values(true_items[0][1], 'node')[1], 'nodes')
+      # pprint.pprint(true_items)
     # Else-if could be not present in the logic
     if tf.get_node_values(node[1], 'elseifs'):
       elif_container = tf.get_node_values(node[1], 'elseifs')
@@ -142,11 +147,20 @@ def decision_node(node):
       '''
         Recursively calls the same method to generate the if within if block
       '''
+      print("TRUE ITEMS:")
+      pprint.pprint(i)
       if i[0] == 'If':
+        print('IFFED')
         rd_if = decision_node(i)
+        print('CONSTRUCTED')
+        pprint.pprint(rd_if)
+        # pprint.pprint(rd_if)
+        # mapped_drawer = tf.identify_translate_to(i)
+        # shape_text = tf.get_processed_text_from_node(i)
         decision_output[1]['true'].append(rd_if)
       else:
-        # print('true item: ')
+        print('true item: ')
+        pprint.pprint(i)
         mapped_drawer = tf.identify_translate_to(i)
         shape_text = tf.get_processed_text_from_node(i)
         decision_output[1]['true'].append((mapped_drawer, shape_text))
@@ -160,17 +174,24 @@ def decision_node(node):
       '''
         Recursively calls the same method to generate the if within if block
       '''
+
+      print("ELIF ITEMS:")
+      pprint.pprint(el_if)
       if el_if[0] == 'If':
-        rd_if = decision_node(i)
+        print('ELIF if')
+        pprint.pprint(el_if)
+        rd_if = decision_node(el_if)
         decision_output[1]['true'].append(rd_if)
       else:
+        print('ELIF if else')
+        pprint.pprint(el_if)
         rd_built = decision_node(el_if)
         decision_output[1]['false'].append(rd_built)
 
     # print()
     for i in else_items:
       '''
-        Recursively calls the same method to generate the if within if block
+        Recursively calls the same method to generate the if within else block
       '''
       if i[0] == 'If':
         rd_if = decision_node(i)
@@ -245,10 +266,12 @@ def condition_drawing(drawing_shape, res_draw, item, count):
   last_el_if_id = 0
   last_el_if_ids = []
   num_el_if_items = 0
+  num_t_t_items = 0
   num_else_items = 0
   while_last_item_id = 0
   t_count = 0
   f_count = 0
+  t_t_cond_id = None
 
   drawing_shape(item[1]['condition'], count)
   # Connect the condition node to the previous statement
@@ -264,12 +287,69 @@ def condition_drawing(drawing_shape, res_draw, item, count):
     for t_item in item[1]['true']:
       if (not isinstance(t_item[0], str)):
         continue
-      # print('T', t_item)
-      drawing_shape = getattr(res_draw, t_item[0])
-      drawing_shape(t_item[1], t_count)
+      
+      # If block within the true block of a parent if (true within true)
+      num_t_t_items = 0
+      if(isinstance(t_item[0], str) and t_item[0] == 'add_decision'):
+        print('DECISION DRAW')
+        pprint.pprint(t_item)
+
+        t_t_cond_id = t_count + 1110
+        t_t_count = t_t_cond_id
+
+        drawing_shape = getattr(res_draw, t_item[0])
+        drawing_shape(t_item[1]['condition'], t_t_cond_id)
+
+        # print('Connection count', f_count+1, el_if_cond_id)
+        # Connect 'true' edge to the 1st node within the block
+        res_draw.connect(t_t_cond_id, t_t_count+1, 'True')
+        num_t_t_items += 1
+
+        '''
+          True items within the second if block
+        '''
+        for e_if_item in t_item[1]['true']:
+          t_t_count += 1
+          drawing_shape = getattr(res_draw, e_if_item[0])
+          drawing_shape(e_if_item[1], t_t_count)
+          # print('THANI block', t_t_cond_id)
+
+          # Connect the nodes within a single else-if block
+          print(t_t_count-1, t_t_cond_id)
+          if (t_t_count-1 != t_t_cond_id):
+            res_draw.connect(t_t_count-1, t_t_count)
+            print()
+
+          
+          # Increment the number of ELSE-IF statements
+          num_t_t_items += 1
+        
+        # Connect the last node within sub-if to the nodes outside
+        res_draw.connect(t_t_count, t_count+1)
+
+        if(t_item[1]['false'] == []):
+          res_draw.connect(t_t_cond_id, t_count+1, 'False')
+
+      else:
+        print('T', t_item)
+        drawing_shape = getattr(res_draw, t_item[0])
+        drawing_shape(t_item[1], t_count)
+
+      if num_t_t_items > 0:
+        print(res_draw.get_nodes())
+        res_draw.connect(t_count-1, t_t_cond_id)
+        print('T', t_count)
+
       # if item[1]['true']
       if t_count > 1110:
-        res_draw.connect(t_count-1, t_count)
+        '''
+          If the t_count doesn't exist, it doesn't draw the connection
+        '''
+        try:
+          if (res_draw.get_node(t_count) and res_draw.get_node(t_count-1)):
+            res_draw.connect(t_count-1, t_count)
+        except KeyError:
+          pass
 
       # Last of the while block
       if (len(item[1]['while_last']) > 0):
@@ -349,6 +429,20 @@ def condition_drawing(drawing_shape, res_draw, item, count):
         print(last_el_if_ids)
         if f_count > el_if_cond_id and last_el_if_id and f_count > max(*last_el_if_ids)+1:
           res_draw.connect(f_count-1, f_count)
+        
+
+      '''
+        Link all items within the false block, when there is a nested if condition
+      '''
+      if f_count > 10000 and t_t_cond_id and t_t_cond_id > 0:
+        '''
+          If the f_count doesn't exist, it doesn't draw the connection
+        '''
+        try:
+          if (res_draw.get_node(f_count) and res_draw.get_node(f_count-1)):
+            res_draw.connect(f_count-1, f_count)
+        except KeyError:
+          pass
 
       f_count += 1
 
@@ -380,8 +474,8 @@ def draw_results(draw_list, output_path):
       Drawing simple shapes like single line statements
       $x = 'hello world';
     '''
-    # print("DRAW_RESULTS method")
-    # pprint.pprint(item)
+    print("DRAW_RESULTS method")
+    pprint.pprint(item)
 
     '''
       Adding the conditional check to use only tuples
@@ -406,7 +500,7 @@ def draw_results(draw_list, output_path):
         cond_id = count
         l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
 
-        # print('Complex BLOCK:', count, item)
+        print('Complex BLOCK:', count, item)
         # print('LATEST COUNTS', l_count, t_count, f_count)
 
       '''

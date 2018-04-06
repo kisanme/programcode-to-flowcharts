@@ -31,7 +31,7 @@ class Drawer(object):
     self.gr.add_node(nid, label=io_name, shape='parallelogram')
 
   def add_decision(self, decision_name, nid):
-    decision_name = (decision_name + ' : ' + str(nid)) if self.debug == True else decision_name
+    decision_name = (str(decision_name) + ' : ' + str(nid)) if self.debug == True else decision_name
     self.gr.add_node(nid, label=decision_name, shape='diamond')
 
   def connect(self, from_node, to_node, connect_name=''):
