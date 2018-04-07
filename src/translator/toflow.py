@@ -226,6 +226,30 @@ def get_function_call(var_node):
   return exp
 
 
+def get_array_items(array_nodes):
+  out = ''
+  x = 0
+  for an in array_nodes:
+    x += 1
+    if an[1]['key'] == None:
+      out += str(an[1]['value'])
+    else:
+      out += str(an[1]['key'])
+      out += ' => '
+      out += str(an[1]['value'])
+
+    if not(len(array_nodes) == x):
+      out += ', '
+  return out
+
+
+def get_array_init(var_node):
+  exp = '['
+  exp += get_array_items(var_node[1]['nodes'])
+  exp += ']'
+  return exp
+
+
 # Returns the variable RHS value
 #   @params var_node is the variable assignment node itself
 # e.g: $hi = $hello->world();
@@ -253,6 +277,13 @@ def get_var_expression(var_node):
     '''
     if isinstance(exp, tuple) and exp[0] == 'FunctionCall':
       exp = get_function_call(exp)
+
+    ''' 
+      If the assigning value is an array initialization
+      e.g: $hi = [1, 2];
+    '''
+    if isinstance(exp, tuple) and exp[0] == 'Array':
+      exp = get_array_init(exp)
 
 
     ''' 

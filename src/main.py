@@ -521,7 +521,7 @@ def condition_drawing(drawing_shape, res_draw, item, count):
 
 def draw_results(draw_list, output_path):
   count = 1
-  res_draw = fld.Drawer(None, debug=True)
+  res_draw = fld.Drawer(None)
   res_draw.initialize_drawing()
   cond_id = count
   l_count, t_count, f_count = 0, 0, 0
