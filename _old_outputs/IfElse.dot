@@ -1,0 +1,23 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [label="\N",
+		shape=rectangle
+	];
+	0	 [label=Start,
+		shape=ellipse];
+	1	 [label="$x = 1 : 1"];
+	0 -> 1;
+	2	 [label="if ( $x==1 ) : 2",
+		shape=diamond];
+	1 -> 2;
+	1110	 [label="$y = 20 : 1110"];
+	2 -> 1110	 [label=True];
+	10000	 [label="$y = 10 : 10000"];
+	2 -> 10000	 [label=False];
+	3	 [label="echo(\"Value of y is: $y\") : 3",
+		shape=parallelogram];
+	1110 -> 3;
+	10000 -> 3;
+	End	 [shape=ellipse];
+	3 -> End;
+}

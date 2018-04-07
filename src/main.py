@@ -117,7 +117,7 @@ def decision_node(node):
     'while_last': []
   })
   node_type = tf.get_node_type(node)
-  print('NODE TYPE', node_type)
+  # print('NODE TYPE', node_type)
   if node_type in ['If', 'ElseIf', 'While']:
     else_items = []
     elif_container = []
@@ -147,20 +147,20 @@ def decision_node(node):
       '''
         Recursively calls the same method to generate the if within if block
       '''
-      print("TRUE ITEMS:")
-      pprint.pprint(i)
+      # print("TRUE ITEMS:")
+      # pprint.pprint(i)
       if i[0] == 'If':
-        print('IFFED')
+        # print('IFFED')
         rd_if = decision_node(i)
-        print('CONSTRUCTED')
-        pprint.pprint(rd_if)
+        # print('CONSTRUCTED')
+        # pprint.pprint(rd_if)
         # pprint.pprint(rd_if)
         # mapped_drawer = tf.identify_translate_to(i)
         # shape_text = tf.get_processed_text_from_node(i)
         decision_output[1]['true'].append(rd_if)
       else:
-        print('true item: ')
-        pprint.pprint(i)
+        # print('true item: ')
+        # pprint.pprint(i)
         mapped_drawer = tf.identify_translate_to(i)
         shape_text = tf.get_processed_text_from_node(i)
         decision_output[1]['true'].append((mapped_drawer, shape_text))
@@ -175,16 +175,16 @@ def decision_node(node):
         Recursively calls the same method to generate the if within if block
       '''
 
-      print("ELIF ITEMS:")
-      pprint.pprint(el_if)
+      # print("ELIF ITEMS:")
+      # pprint.pprint(el_if)
       if el_if[0] == 'If':
-        print('ELIF if')
-        pprint.pprint(el_if)
+        # print('ELIF if')
+        # pprint.pprint(el_if)
         rd_if = decision_node(el_if)
         decision_output[1]['true'].append(rd_if)
       else:
-        print('ELIF if else')
-        pprint.pprint(el_if)
+        # print('ELIF if else')
+        # pprint.pprint(el_if)
         rd_built = decision_node(el_if)
         decision_output[1]['false'].append(rd_built)
 
@@ -293,8 +293,8 @@ def condition_drawing(drawing_shape, res_draw, item, count):
       num_t_t_items = 0
       num_t_f_items = 0
       if(isinstance(t_item[0], str) and t_item[0] == 'add_decision'):
-        print('DECISION DRAW')
-        pprint.pprint(t_item)
+        # print('DECISION DRAW')
+        # pprint.pprint(t_item)
 
         t_t_cond_id = t_count + 1110
         t_t_count = t_t_cond_id
@@ -316,10 +316,10 @@ def condition_drawing(drawing_shape, res_draw, item, count):
           # print('THANI block', t_t_cond_id)
 
           # Connect the nodes within a single else-if block
-          print(t_t_count-1, t_t_cond_id)
+          # print(t_t_count-1, t_t_cond_id)
           if (t_t_count-1 != t_t_cond_id):
             res_draw.connect(t_t_count-1, t_t_count)
-            print()
+            # print()
           
           # Increment the number of ELSE-IF statements
           num_t_t_items += 1
@@ -342,10 +342,10 @@ def condition_drawing(drawing_shape, res_draw, item, count):
           # print('THANI block', t_t_cond_id)
 
           # Connect the nodes within a single else-if block
-          print(t_f_count-1, t_t_cond_id)
+          # print(t_f_count-1, t_t_cond_id)
           if (t_f_count-10-1 != t_t_cond_id):
             res_draw.connect(t_f_count-1, t_f_count)
-            print()
+            # print()
 
           num_t_f_items += 1
 
@@ -359,29 +359,29 @@ def condition_drawing(drawing_shape, res_draw, item, count):
           res_draw.connect(t_f_count, t_count+1)
 
       else:
-        print('T', t_item)
+        # print('T', t_item)
         drawing_shape = getattr(res_draw, t_item[0])
         drawing_shape(t_item[1], t_count)
 
       if num_t_t_items > 0:
-        print(res_draw.get_nodes())
+        # print(res_draw.get_nodes())
         try:
           if res_draw.get_node(t_count-1):
             res_draw.connect(t_count-1, t_t_cond_id)
         except KeyError:
           pass
         # res_draw.connect(t_count-1, t_t_cond_id)
-        print('T', t_count)
+        # print('T', t_count)
 
       if num_t_f_items > 0:
-        print(res_draw.get_nodes())
+        # print(res_draw.get_nodes())
         try:
           if res_draw.get_node(t_count-1):
             res_draw.connect(t_count-1, t_t_cond_id)
         except KeyError:
           pass
         # res_draw.connect(t_count-1, t_t_cond_id)
-        print('T', t_count)
+        # print('T', t_count)
 
       '''
         If there is true elments
@@ -484,7 +484,7 @@ def condition_drawing(drawing_shape, res_draw, item, count):
 
         # Condition for min bound:  and f_count <= (10000-1 + num_el_if_items + num_else_items)
         # Draw connections within the ELSE statements
-        print(last_el_if_ids)
+        # print(last_el_if_ids)
         if f_count > el_if_cond_id and last_el_if_id and f_count > max(*last_el_if_ids)+1:
           res_draw.connect(f_count-1, f_count)
         
@@ -533,8 +533,8 @@ def draw_results(draw_list, output_path):
       Drawing simple shapes like single line statements
       $x = 'hello world';
     '''
-    print("DRAW_RESULTS method")
-    pprint.pprint(item)
+    # print("DRAW_RESULTS method")
+    # pprint.pprint(item)
 
     '''
       Adding the conditional check to use only tuples
@@ -555,20 +555,20 @@ def draw_results(draw_list, output_path):
         Blocked statement - Complex statements
         Like If-else-elseif and While
       '''
-      print('ITEM 1', (item[1]))
-      print('ITEM 1 type', type(item[1]))
+      # print('ITEM 1', (item[1]))
+      # print('ITEM 1 type', type(item[1]))
       if isinstance(item[1], dict):
         '''
           Makes is_while with the value True if the while_last element is not empty
         '''
         is_while = item[1]['while_last'] != []
 
-        print('CONDITIONAL WITHIN', item)
+        # print('CONDITIONAL WITHIN', item)
 
         cond_id = count
         l_count, t_count, f_count = condition_drawing(drawing_shape, res_draw, item, cond_id)
 
-        print('Complex BLOCK:', count, item)
+        # print('Complex BLOCK:', count, item)
         # print('LATEST COUNTS', l_count, t_count, f_count)
 
       '''
@@ -644,9 +644,9 @@ def code_to_flow(php_file_path, output_path):
   # This populates drawable_stack list
   rp_parsed = shallow_parse(ast_processed)
 
-  print()
-  print('Drawable stack: ')
-  pprint.pprint(drawable_stack)
+  # print()
+  # print('Drawable stack: ')
+  # pprint.pprint(drawable_stack)
 
   # Deep parse the shallow parsed tree
   drawing_list = []

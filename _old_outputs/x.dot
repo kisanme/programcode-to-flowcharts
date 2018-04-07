@@ -1,0 +1,12 @@
+strict digraph "" {
+	graph [rankdir=LR];
+	node [shape=rectangle];
+	Start	 [shape=ellipse];
+	"If (1== 2)"	 [shape=diamond];
+	Start -> "If (1== 2)";
+	"If (1== 2)" -> "echo (\"HI\")"	 [label=False];
+	"If (1== 2)" -> "echo (\"printing hello\")"	 [label=True];
+	End	 [shape=ellipse];
+	"echo (\"HI\")" -> End;
+	"echo (\"printing hello\")" -> End;
+}

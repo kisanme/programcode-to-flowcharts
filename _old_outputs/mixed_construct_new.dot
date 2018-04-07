@@ -1,0 +1,37 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [label="\N",
+		shape=rectangle
+	];
+	0	 [label=Start,
+		shape=ellipse];
+	1	 [label="$c = 1 : 1"];
+	0 -> 1;
+	2	 [label="if ( $c<=10 ) : 2",
+		shape=diamond];
+	1 -> 2;
+	2220	 [label="if ( $c%2==0 ) : 2220",
+		shape=diamond];
+	2 -> 2220	 [label=True];
+	3	 [label="echo(\"Out of the loop\") : 3",
+		shape=parallelogram];
+	2 -> 3	 [label=False];
+	2221	 [label="echo(\"While and True\") : 2221",
+		shape=parallelogram];
+	2220 -> 2221	 [label=True];
+	2231	 [label="echo(\"While and False\") : 2231",
+		shape=parallelogram];
+	2220 -> 2231	 [label=False];
+	2222	 [label="echo(\"$c is an even number\") : 2222",
+		shape=parallelogram];
+	2221 -> 2222;
+	1111	 [label="$c++ : 1111"];
+	2222 -> 1111;
+	2232	 [label="echo(\"$c is an odd number\") : 2232",
+		shape=parallelogram];
+	2231 -> 2232;
+	2232 -> 1111;
+	1111 -> 2;
+	End	 [shape=ellipse];
+	3 -> End;
+}

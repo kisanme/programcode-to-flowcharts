@@ -1,0 +1,12 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [shape=rectangle];
+	Start	 [shape=ellipse];
+	"if ($x == 0)"	 [shape=diamond];
+	Start -> "if ($x == 0)";
+	"if ($x == 0)" -> "$y = 20"	 [label=True];
+	"if ($x == 0)" -> "$y = 10"	 [label=False];
+	End	 [shape=ellipse];
+	"$y = 20" -> End;
+	"$y = 10" -> End;
+}

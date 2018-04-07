@@ -1,0 +1,25 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [label="\N",
+		shape=rectangle
+	];
+	0	 [label=Start,
+		shape=ellipse];
+	1	 [label="$some_array = None : 1"];
+	0 -> 1;
+	2	 [label="$counter = 0 : 2"];
+	1 -> 2;
+	3	 [label="if ( $counter<100 ) : 3",
+		shape=diamond];
+	2 -> 3;
+	1110	 [label="$some_array[] = $counter : 1110"];
+	3 -> 1110	 [label=True];
+	4	 [label="echo(\"Done with while\") : 4",
+		shape=parallelogram];
+	3 -> 4	 [label=False];
+	1111	 [label="$counter++ : 1111"];
+	1110 -> 1111;
+	1111 -> 3;
+	End	 [shape=ellipse];
+	4 -> End;
+}

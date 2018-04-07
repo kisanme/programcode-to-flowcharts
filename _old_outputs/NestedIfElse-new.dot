@@ -1,0 +1,38 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [label="\N",
+		shape=rectangle
+	];
+	0	 [label=Start,
+		shape=ellipse];
+	1	 [label="$x = 1 : 1"];
+	0 -> 1;
+	2	 [label="if ( $x==0 ) : 2",
+		shape=diamond];
+	1 -> 2;
+	1110	 [label="echo(\"$x is zero\") : 1110",
+		shape=parallelogram];
+	2 -> 1110	 [label=True];
+	10000	 [label="echo(\"$x is not zero\") : 10000",
+		shape=parallelogram];
+	2 -> 10000	 [label=False];
+	2221	 [label="if ( $y==0 ) : 2221",
+		shape=diamond];
+	1110 -> 2221;
+	2222	 [label="echo(\"$y is zero too\") : 2222",
+		shape=parallelogram];
+	2221 -> 2222	 [label=True];
+	1112	 [label="$y = 30 : 1112"];
+	2221 -> 1112	 [label=False];
+	2223	 [label="$y = 20 : 2223"];
+	2222 -> 2223;
+	2223 -> 1112;
+	3	 [label="echo(\"Value of y is: $y\") : 3",
+		shape=parallelogram];
+	1112 -> 3;
+	10001	 [label="$y = 10 : 10001"];
+	10000 -> 10001;
+	10001 -> 3;
+	End	 [shape=ellipse];
+	3 -> End;
+}

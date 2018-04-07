@@ -1,0 +1,27 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [label="\N",
+		shape=rectangle
+	];
+	Start	 [shape=ellipse];
+	init	 [label="$c = 1"];
+	Start -> init;
+	while_cond	 [label="$c <= 10",
+		shape=diamond];
+	init -> while_cond;
+	even_num_cond	 [label="$c % 2 == 0",
+		shape=diamond];
+	while_cond -> even_num_cond	 [label=True];
+	End	 [shape=ellipse];
+	while_cond -> End	 [label=False];
+	inc	 [label="$c += 1"];
+	inc -> while_cond;
+	tt	 [label="echo(\"$c is an even number\")",
+		shape=parallelogram];
+	even_num_cond -> tt	 [label=True];
+	tf	 [label="echo(\"$c is an odd number\")",
+		shape=parallelogram];
+	even_num_cond -> tf	 [label=False];
+	tt -> inc;
+	tf -> inc;
+}

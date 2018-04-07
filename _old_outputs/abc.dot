@@ -1,0 +1,4 @@
+strict digraph "" {
+	graph [rankdir=LR];
+	x	 [shape=rectangle];
+}

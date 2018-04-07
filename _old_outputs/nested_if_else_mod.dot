@@ -1,0 +1,23 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [label="\N",
+		shape=rectangle
+	];
+	Start	 [shape=ellipse];
+	par_if	 [label="if ($x == 0)",
+		shape=diamond];
+	Start -> par_if;
+	child_if	 [label="if ($y == 0)",
+		shape=diamond];
+	par_if -> child_if	 [label=True];
+	f	 [label="$y = 10"];
+	par_if -> f	 [label=False];
+	tt	 [label="$y = 20"];
+	child_if -> tt	 [label=True];
+	t	 [label="$y = $y + 20"];
+	child_if -> t	 [label=False];
+	tt -> t;
+	End	 [shape=ellipse];
+	t -> End;
+	f -> End;
+}

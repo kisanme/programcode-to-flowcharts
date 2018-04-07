@@ -1,0 +1,16 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [label="\N",
+		shape=rectangle
+	];
+	0	 [label=Start,
+		shape=ellipse];
+	1	 [label="echo(\"Hello World\") : 1",
+		shape=parallelogram];
+	0 -> 1;
+	2	 [label="echo(\"Hi\") : 2",
+		shape=parallelogram];
+	1 -> 2;
+	End	 [shape=ellipse];
+	2 -> End;
+}

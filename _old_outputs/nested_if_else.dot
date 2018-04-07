@@ -1,0 +1,19 @@
+strict digraph "" {
+	graph [rankdir=TB];
+	node [shape=rectangle];
+	Start	 [shape=ellipse];
+	"if ($x < 2)"	 [shape=diamond];
+	Start -> "if ($x < 2)";
+	"if ($x == 0)"	 [shape=diamond];
+	"if ($x < 2)" -> "if ($x == 0)"	 [label=True];
+	"echo (\"positive numbers greater than 2\")"	 [shape=parallelogram];
+	"if ($x < 2)" -> "echo (\"positive numbers greater than 2\")"	 [label=False];
+	"echo (\"Zero test\")"	 [shape=parallelogram];
+	"if ($x == 0)" -> "echo (\"Zero test\")"	 [label=True];
+	"echo (\"1 or negative number\")"	 [shape=parallelogram];
+	"if ($x == 0)" -> "echo (\"1 or negative number\")"	 [label=False];
+	End	 [shape=ellipse];
+	"echo (\"positive numbers greater than 2\")" -> End;
+	"echo (\"Zero test\")" -> End;
+	"echo (\"1 or negative number\")" -> End;
+}
