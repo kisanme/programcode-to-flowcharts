@@ -1,0 +1,2 @@
+To use the program, please use the following command:
+  $ python bin/toflow.py path/to/input.php -o path/to/output/file

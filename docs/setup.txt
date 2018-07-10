@@ -1,0 +1,6 @@
+You need to have latest version of Python and Pip installed in your system
+ - Recommended python version: Python 3.6.3
+ - Recommended Pip version: pip 10.0.1
+
+To setup the dependencies of the _toflowchart package, please run the following command
+  $ pip install -r requirements.txt

@@ -1,0 +1,7 @@
+You should have docker and docker-compose installed in your system.
+  - Recommended docker version: Docker version 18.03.0-ce 
+  - Recommended docker-compose version: docker-compose version 1.20.1
+
+To install and setup the docker containers which will by default install all the dependencies to run _toFlowchart software,
+please run the following command:
+  $ docker-compose up -d  
